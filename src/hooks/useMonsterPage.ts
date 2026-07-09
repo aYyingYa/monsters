@@ -1,11 +1,19 @@
 import {
   DEFAULT_MONSTER_TYPE,
+  DELETE_SUCCESS_MESSAGE,
+  EDIT_SUCCESS_MESSAGE,
   ELITE_MONSTER_TYPE,
+  SELECT_DATE_MESSAGE_PREFIX,
   STATE_VALUE_INDEX,
+  TIMER_CANCEL_MESSAGE,
+  TIMER_CONFIRM_MESSAGE,
+  TIMER_PAUSE_MESSAGE,
+  TIMER_RESUME_MESSAGE,
+  TIMER_START_MESSAGE,
 } from "../configs";
 import type { FormValues, Monster } from "../types/App";
 import { useState } from "react";
-import { Form, type TableProps } from "antd";
+import { App, Form, type TableProps } from "antd";
 import type { FilterValue, SortOrder } from "antd/es/table/interface";
 import type { FormInstance } from "antd/es/form";
 import { reduceMonsterCount } from "../utils/calc";
@@ -133,6 +141,7 @@ interface UseMonsterPageResult {
 const useMonsterPage = (): UseMonsterPageResult => {
   const
     form = Form.useForm<FormValues>()[STATE_VALUE_INDEX],
+    { message } = App.useApp(),
     monsterStorage = useMonsterStorage(),
     monsterTimer = useMonsterTimer(),
     [editMonster, setEditMonster] = useState<Monster | null>(null),
@@ -147,6 +156,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
     },
     handleCancelRecord = (): void => {
       monsterTimer.resetTimer();
+      message.success(TIMER_CANCEL_MESSAGE);
     },
     handleConfirmRecord = async (): Promise<void> => {
       try {
@@ -164,6 +174,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
           };
         form.setFieldValue("usedTime", elapsed);
         await monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]);
+        message.success(TIMER_CONFIRM_MESSAGE);
       } catch {
         // 校验失败时 Ant Design 会自动展示错误提示
       }
@@ -171,6 +182,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
     handleDeleteMonster = async (id: string): Promise<void> => {
       const nextMonsters = monsterStorage.monsters.filter((monster) => monster.id !== id);
       await monsterStorage.saveMonsters(nextMonsters);
+      message.success(DELETE_SUCCESS_MESSAGE);
     },
     handleEditMonster = (monster: Monster): void => {
       setEditMonster(monster);
@@ -178,15 +190,19 @@ const useMonsterPage = (): UseMonsterPageResult => {
     },
     handlePauseTimer = (): void => {
       monsterTimer.pauseTimer();
+      message.success(TIMER_PAUSE_MESSAGE);
     },
     handleResumeTimer = (): void => {
       monsterTimer.resumeTimer();
+      message.success(TIMER_RESUME_MESSAGE);
     },
     handleSelectDate = async (date: string): Promise<void> => {
       await monsterStorage.selectDate(date);
+      message.success(`${SELECT_DATE_MESSAGE_PREFIX}${date}`);
     },
     handleStartTimer = (): void => {
       monsterTimer.startTimer();
+      message.success(TIMER_START_MESSAGE);
     },
     handleTableChange: NonNullable<TableProps<Monster>["onChange"]> = (_pagination, filters, sorter): void => {
       setFilteredInfo(filters);
@@ -218,6 +234,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
       await monsterStorage.saveMonsters(nextMonsters);
       setEditModalOpen(false);
       setEditMonster(null);
+      message.success(EDIT_SUCCESS_MESSAGE);
     };
 
   return {

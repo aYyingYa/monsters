@@ -6,11 +6,16 @@ import {
   COUNT_CARD_NO_CELL_SUFFIX,
   EMPTY_NAME_LIST_TEXT,
   NAME_LIST_SEPARATOR,
+  SCREENSHOT_BUTTON_TITLE,
+  SCREENSHOT_FAILURE_MESSAGE,
+  SCREENSHOT_SUCCESS_MESSAGE,
   ZERO,
 } from "../../configs";
-import { Card, Col, Divider, Row } from "antd";
+import { App, Button, Card, Col, Divider, Row, Space, Tooltip } from "antd";
+import { CameraOutlined } from "@ant-design/icons";
 import type { CountCardProps } from "./type";
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
+import useScreenshot from "../../hooks/useScreenshot";
 
 // #region 私有函数与统计卡片
 const
@@ -46,24 +51,58 @@ const
       remaining = Math.max(limit - count, ZERO),
       carText = buildCarText(targetName, remaining, cell),
       remainingText = `${COUNT_CARD_NO_CELL_PREFIX}${remaining}${COUNT_CARD_NO_CELL_SUFFIX}`,
-      nameListDisplay = inCurrentWorldNames.join(NAME_LIST_SEPARATOR) || EMPTY_NAME_LIST_TEXT;
+      nameListDisplay = inCurrentWorldNames.join(NAME_LIST_SEPARATOR) || EMPTY_NAME_LIST_TEXT,
+      cardRef = useRef<HTMLDivElement>(null),
+      { message } = App.useApp(),
+      { capture } = useScreenshot(),
+      [screenshotLoading, setScreenshotLoading] = useState(false),
+      handleScreenshot = useCallback(async (): Promise<void> => {
+        if (!cardRef.current) {
+          message.error(SCREENSHOT_FAILURE_MESSAGE);
+          return;
+        }
+        setScreenshotLoading(true);
+        const success = await capture(cardRef.current);
+        setScreenshotLoading(false);
+        if (success) {
+          message.success(SCREENSHOT_SUCCESS_MESSAGE);
+        } else {
+          message.error(SCREENSHOT_FAILURE_MESSAGE);
+        }
+      }, [capture, message]);
     // #endregion
 
     // #region 渲染
     return (
-      <Card
-        extra={<div><span style={{ fontSize: "24px" }}>{count}</span>\{limit}</div>}
-        style={{ marginBottom: COUNT_CARD_MARGIN_BOTTOM }}
-        title={title}
-        variant="borderless"
-      >
-        <Row gutter={8}>
-          <Col span={12}>{remainingText}</Col>
-          <Col span={12}>{cell && cell > ZERO && carText}</Col>
-        </Row>
-        <Divider size="small" />
-        <div>{`${COUNT_CARD_NOT_IN_WORLD_PREFIX}${nameListDisplay}`}</div>
-      </Card>
+      <div ref={cardRef}>
+        <Card
+          extra={<div><span style={{ fontSize: "24px" }}>{count}</span>\{limit}</div>}
+          style={{ marginBottom: COUNT_CARD_MARGIN_BOTTOM }}
+          title={
+            <Space align="center" size={8}>
+              <span>{title}</span>
+              <Tooltip title={SCREENSHOT_BUTTON_TITLE}>
+                <Button
+                  data-screenshot-exclude
+                  icon={<CameraOutlined />}
+                  loading={screenshotLoading}
+                  onClick={handleScreenshot}
+                  size="small"
+                  type="text"
+                />
+              </Tooltip>
+            </Space>
+          }
+          variant="borderless"
+        >
+          <Row gutter={8}>
+            <Col span={12}>{remainingText}</Col>
+            <Col span={12}>{cell && cell > ZERO && carText}</Col>
+          </Row>
+          <Divider size="small" />
+          <div>{`${COUNT_CARD_NOT_IN_WORLD_PREFIX}${nameListDisplay}`}</div>
+        </Card>
+      </div>
     );
     // #endregion
   };

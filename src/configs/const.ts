@@ -102,6 +102,34 @@ export const
   TIME_PAD_STRING = "0",
   /** 时间分隔符 */
   TIME_SEPARATOR = ":",
+  /** 截图背景色 */
+  SCREENSHOT_BACKGROUND_COLOR = "#ffffff",
+  /** 截图按钮提示文案 */
+  SCREENSHOT_BUTTON_TITLE = "点击截图",
+  /** 截图图片 MIME 类型 */
+  SCREENSHOT_MIME_TYPE = "image/png",
+  /** 截图像素比 */
+  SCREENSHOT_PIXEL_RATIO = 2,
+  /** 删除成功提示 */
+  DELETE_SUCCESS_MESSAGE = "删除成功",
+  /** 修改成功提示 */
+  EDIT_SUCCESS_MESSAGE = "修改成功",
+  /** 截图失败提示 */
+  SCREENSHOT_FAILURE_MESSAGE = "截图失败，请重试",
+  /** 截图成功提示 */
+  SCREENSHOT_SUCCESS_MESSAGE = "截图成功，已复制到剪切板",
+  /** 切换日期提示前缀 */
+  SELECT_DATE_MESSAGE_PREFIX = "已切换至",
+  /** 取消记录提示 */
+  TIMER_CANCEL_MESSAGE = "取消记录",
+  /** 结束并记录成功提示 */
+  TIMER_CONFIRM_MESSAGE = "结束并记录成功",
+  /** 暂停计时提示 */
+  TIMER_PAUSE_MESSAGE = "暂停计时",
+  /** 继续计时提示 */
+  TIMER_RESUME_MESSAGE = "继续计时",
+  /** 开始计时提示 */
+  TIMER_START_MESSAGE = "开始计时",
   /** 零值常量 */
   ZERO = 0;
 // #endregion

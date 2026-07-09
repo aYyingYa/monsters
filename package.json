@@ -13,6 +13,7 @@
     "@ant-design/icons": "6.x",
     "antd": "^6.5.0",
     "dayjs": "^1.11.21",
+    "html-to-image": "^1.11.13",
     "localforage": "^1.10.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

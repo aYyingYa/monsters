@@ -14,31 +14,37 @@
 - **UI 组件库**：Ant Design 6
 - **本地持久化**：localForage
 - **代码规范**：ESLint + typescript-eslint
+- **截图能力**：html-to-image
+
+## 包管理器
+
+本项目统一使用 **Yarn** 作为包管理器（已验证 Node 22 + Yarn 1.22.22）。
+请确保本地安装 Yarn，并避免混用 npm，以防止 lock 文件不一致。
 
 ## 安装与启动
 
 ```bash
 # 安装依赖
-npm install
+yarn install
 
 # 启动开发服务器
-npm run dev
+yarn dev
 ```
 
 ## 构建
 
 ```bash
 # 类型检查 + 生产构建
-npm run build
+yarn build
 
 # 本地预览生产包
-npm run preview
+yarn preview
 ```
 
 ## 代码检查
 
 ```bash
-npm run lint
+yarn lint
 ```
 
 ## 项目结构
@@ -85,5 +91,5 @@ src/
 
 1. Fork 本仓库。
 2. 从 `main` 分支创建 `feature/xxx` 或 `fix/xxx` 分支。
-3. 提交前执行 `npm run lint`，确保无 ESLint 告警。
+3. 提交前执行 `yarn lint`，确保无 ESLint 告警。
 4. 发起 Pull Request 并描述变更内容。

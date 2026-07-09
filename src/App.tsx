@@ -1,4 +1,4 @@
-import { Divider, Form } from "antd";
+import { App as AntdApp, Divider, Form } from "antd";
 import { FormItems, MonsterCountSummary } from "./components";
 import React from "react";
 import styles from "./App.module.less";
@@ -45,49 +45,51 @@ const App: React.FC = () => {
 
   // #region 渲染
   return (
-    <div className={styles.home}>
-      <MonsterCountSummary
-        defaultMonsterCount={defaultMonsterCount}
-        eliteMonsterCount={eliteMonsterCount}
-        form={form}
-        monsters={monsters}
-      />
-      <Form form={form} layout="vertical">
-        <FormItems
-          countHistory={countHistory}
-          elapsedMs={elapsedMs}
-          mode={mode}
-          nameHistory={nameHistory}
-          onCancelRecord={onCancelRecord}
-          onConfirmRecord={onConfirmRecord}
-          onPauseTimer={onPauseTimer}
-          onResumeTimer={onResumeTimer}
-          onStartTimer={onStartTimer}
+    <AntdApp style={{ height: "100%" }}>
+      <div className={styles.home}>
+        <MonsterCountSummary
+          defaultMonsterCount={defaultMonsterCount}
+          eliteMonsterCount={eliteMonsterCount}
+          form={form}
+          monsters={monsters}
         />
-      </Form>
-      <Divider />
-      <DateFileSelect
-        activeDate={activeDate}
-        availableDates={availableDates}
-        onSelect={onSelectDate}
-      />
-      <MonsterTable
-        filteredInfo={filteredInfo}
-        monsters={monsters}
-        onDelete={onDeleteMonster}
-        onEdit={onEditMonster}
-        onTableChange={onTableChange}
-        sortInfo={sortInfo}
-      />
-      <MonsterEditModal
-        countHistory={countHistory}
-        initialValues={editMonster}
-        nameHistory={nameHistory}
-        onCancel={onCancelEdit}
-        onOk={onSubmitEdit}
-        open={editModalOpen}
-      />
-    </div>
+        <Form form={form} layout="vertical">
+          <FormItems
+            countHistory={countHistory}
+            elapsedMs={elapsedMs}
+            mode={mode}
+            nameHistory={nameHistory}
+            onCancelRecord={onCancelRecord}
+            onConfirmRecord={onConfirmRecord}
+            onPauseTimer={onPauseTimer}
+            onResumeTimer={onResumeTimer}
+            onStartTimer={onStartTimer}
+          />
+        </Form>
+        <Divider />
+        <DateFileSelect
+          activeDate={activeDate}
+          availableDates={availableDates}
+          onSelect={onSelectDate}
+        />
+        <MonsterTable
+          filteredInfo={filteredInfo}
+          monsters={monsters}
+          onDelete={onDeleteMonster}
+          onEdit={onEditMonster}
+          onTableChange={onTableChange}
+          sortInfo={sortInfo}
+        />
+        <MonsterEditModal
+          countHistory={countHistory}
+          initialValues={editMonster}
+          nameHistory={nameHistory}
+          onCancel={onCancelEdit}
+          onOk={onSubmitEdit}
+          open={editModalOpen}
+        />
+      </div>
+    </AntdApp>
   );
   // #endregion
 };

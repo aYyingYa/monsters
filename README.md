@@ -1,77 +1,89 @@
-# React + TypeScript + Vite
+# Monster 怪物计数器
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个基于 React + TypeScript + Vite 的本地怪物计数管理工具，所有数据通过 localForage 持久化到浏览器，无需后端服务。
 
-Currently, two official plugins are available:
+## 项目背景
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+用于本地记录不同日期下怪物击杀数量、类型与计时。支持按日期拆分文件，方便按天复盘统计。
 
-## React Compiler
+## 技术栈
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **框架**：React 19（启用 React Compiler）
+- **语言**：TypeScript 6
+- **构建工具**：Vite 8
+- **UI 组件库**：Ant Design 6
+- **本地持久化**：localForage
+- **代码规范**：ESLint + typescript-eslint
 
-Note: This will impact Vite dev & build performances.
+## 安装与启动
 
-## Expanding the ESLint configuration
+```bash
+# 安装依赖
+npm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+# 启动开发服务器
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 构建
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# 类型检查 + 生产构建
+npm run build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 本地预览生产包
+npm run preview
+```
+
+## 代码检查
+
+```bash
+npm run lint
+```
+
+## 项目结构
 
 ```
+src/
+  components/   # UI 组件（表格、表单、统计卡片、选择器、弹窗等）
+  hooks/        # 业务逻辑 Hook（存储、页面、计时器）
+  services/     # 持久化服务抽象与 localForage 实现
+  utils/        # 工具函数（计算、输入归一化、校验规则）
+  configs/      # 常量与配置
+  types/        # 全局类型定义
+```
+
+## 数据持久化
+
+数据保存在浏览器本地，localForage 会按以下优先级选择底层存储：
+
+1. IndexedDB
+2. WebSQL
+3. LocalStorage
+
+关键存储键：
+
+- 日期索引：`"dates"` —— 存储所有已存在的日期字符串数组。
+- 每日数据：`"file:YYYY-MM-DD"` —— 存储对应日期的怪物记录数组。
+
+## 核心功能
+
+- 按日期文件管理怪物记录，支持切换日期。
+- 怪物类型区分为「小怪」与「精英怪」。
+- 实时统计各类怪物总数。
+- 内置计时器记录击杀耗时。
+- 新增、编辑、删除单条怪物记录。
+- 自动持久化到浏览器本地存储。
+
+## 未来规划
+
+- [ ] 数据导入 / 导出（JSON / CSV）
+- [ ] 统计图表可视化
+- [ ] 多语言支持
+
+## 贡献指南
+
+1. Fork 本仓库。
+2. 从 `main` 分支创建 `feature/xxx` 或 `fix/xxx` 分支。
+3. 提交前执行 `npm run lint`，确保无 ESLint 告警。
+4. 发起 Pull Request 并描述变更内容。

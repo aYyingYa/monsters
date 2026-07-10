@@ -54,6 +54,14 @@ const
       await removeDateFromIndex(date);
       await storage.removeItem(buildDateKey(date));
     },
+    ensureDate: async (date: string): Promise<void> => {
+      const storedDates = await storage.getItem<string[]>(DATES_INDEX_KEY) ?? [];
+      if (storedDates.includes(date)) {
+        return;
+      }
+      await storage.setItem(buildDateKey(date), []);
+      await addDateToIndex(date);
+    },
     listDates: async (): Promise<string[]> => {
       const storedDates = await storage.getItem<string[]>(DATES_INDEX_KEY);
       return storedDates ?? [];

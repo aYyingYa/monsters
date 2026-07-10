@@ -80,8 +80,8 @@ export const
   TIMER_CANCEL_LABEL = "取消记录",
   /** 计时器显示格式：时:分:秒:毫秒 */
   TIMER_DISPLAY_FORMAT = "HH:mm:ss:SSS",
-  /** 计时器结束并记录按钮文案 */
-  TIMER_END_LABEL = "结束并记录",
+  /** 计时器结束按钮文案 */
+  TIMER_END_LABEL = "结束",
   /** 计时器小数位位数 */
   TIMER_FRACTION_DIGITS = 3,
   /** 计时器标签 */

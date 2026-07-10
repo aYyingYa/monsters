@@ -41,5 +41,10 @@ export interface MonsterStorageService {
    * @param monsters 怪物数组
    */
   saveByDate: (date: string, monsters: Monster[]) => Promise<void>;
+  /**
+   * 确保指定日期在索引中存在（不存在时创建空记录）
+   * @param date 日期
+   */
+  ensureDate: (date: string) => Promise<void>;
 }
 // #endregion

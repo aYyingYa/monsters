@@ -38,10 +38,16 @@ interface UseMonsterStorageResult {
  * @returns 存储状态与操作函数
  */
 const useMonsterStorage = (): UseMonsterStorageResult => {
+  // #region 状态与工具函数
   const
-    DATE_SEPARATOR = "T",
-    DATE_STRING_PART_INDEX = 0,
-    getTodayDateString = (): string => new Date().toISOString().split(DATE_SEPARATOR)[DATE_STRING_PART_INDEX],
+    /**
+     * 获取本地时区当前日期字符串
+     * @returns 格式为 YYYY-MM-DD 的日期
+     */
+    getTodayDateString = (): string => {
+      const now = new Date();
+      return now.toLocaleDateString("zh-CN", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//gu, "-");
+    },
     storageService = createLocalForageMonsterService(),
     today = getTodayDateString(),
     [activeDate, setActiveDate] = useState(today),
@@ -85,6 +91,7 @@ const useMonsterStorage = (): UseMonsterStorageResult => {
         dates = await storageService.listDates(),
         initialMap = new Map<string, Monster[]>();
       if (!dates.includes(today)) {
+        await storageService.ensureDate(today);
         dates.push(today);
       }
       await Promise.all(

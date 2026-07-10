@@ -1,4 +1,4 @@
-import type { FilterValue, SortOrder } from "antd/es/table/interface";
+import type { SortOrder } from "antd/es/table/interface";
 import type { Monster } from "../../types/App";
 import type { TableProps } from "antd";
 
@@ -6,10 +6,6 @@ import type { TableProps } from "antd";
  * 怪物表格组件属性
  */
 interface MonsterTableProps {
-  /**
-   * 受控筛选状态
-   */
-  filteredInfo: Record<string, FilterValue | null>;
   /**
    * 怪物列表
    */

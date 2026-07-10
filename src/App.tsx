@@ -23,7 +23,6 @@ const App: React.FC = () => {
     editModalOpen,
     elapsedMs,
     eliteMonsterCount,
-    filteredInfo,
     form,
     mode,
     monsters,
@@ -68,14 +67,13 @@ const App: React.FC = () => {
             onStartTimer={onStartTimer}
           />
         </Form>
-        <Divider />
+        <Divider size="middle" />
         <DateFileSelect
           activeDate={activeDate}
           availableDates={availableDates}
           onSelect={onSelectDate}
         />
         <MonsterTable
-          filteredInfo={filteredInfo}
           monsters={monsters}
           onDelete={onDeleteMonster}
           onEdit={onEditMonster}

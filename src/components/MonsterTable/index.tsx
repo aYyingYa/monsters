@@ -12,7 +12,6 @@ const MonsterTable: React.FC<MonsterTableProps> = (props) => {
   // #region 解构属性与列配置缓存
   const
     {
-      filteredInfo,
       monsters,
       onDelete,
       onEdit,
@@ -20,11 +19,11 @@ const MonsterTable: React.FC<MonsterTableProps> = (props) => {
       sortInfo,
     } = props,
     /**
-     * 缓存表格列配置，避免每次渲染重新创建导致筛选弹窗状态异常
+     * 缓存表格列配置，仅随筛选/排序与回调变化而重建
      */
     columns = useMemo(
-      () => createColumns(onEdit, onDelete, { filteredInfo, sortInfo }),
-      [filteredInfo, onDelete, onEdit, sortInfo]
+      () => createColumns(onEdit, onDelete, { sortInfo }),
+      [onDelete, onEdit, sortInfo]
     );
   // #endregion
 

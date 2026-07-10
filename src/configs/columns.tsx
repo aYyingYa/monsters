@@ -7,7 +7,7 @@ import {
   TIME_FORMAT,
 } from "./const";
 import type { ColumnsType } from "antd/es/table";
-import type { FilterValue, SortOrder } from "antd/es/table/interface";
+import type { SortOrder } from "antd/es/table/interface";
 import type { Monster } from "../types/App";
 import { Button, Popconfirm, Space, Tag } from "antd";
 import dayjs from "dayjs";
@@ -18,10 +18,6 @@ import { formatElapsedTime } from "../utils/calc";
  * 创建列配置选项
  */
 interface CreateColumnsOptions {
-  /**
-   * 筛选状态
-   */
-  filteredInfo: Record<string, FilterValue | null>;
   /**
    * 排序状态
    */
@@ -35,8 +31,8 @@ const
    * 是否在本世界筛选选项
    */
   CURRENT_WORLD_FILTER_OPTIONS = [
-    { text: CURRENT_WORLD_YES, value: true },
-    { text: CURRENT_WORLD_NO, value: false },
+    { text: CURRENT_WORLD_YES, value: CURRENT_WORLD_YES },
+    { text: CURRENT_WORLD_NO, value: CURRENT_WORLD_NO },
   ],
   /**
    * 怪物类型筛选选项
@@ -69,7 +65,7 @@ const
   onDelete: (id: string) => void,
   options: CreateColumnsOptions
 ): ColumnsType<Monster> => {
-  const { filteredInfo, sortInfo } = options;
+  const { sortInfo } = options;
   return [
     {
       dataIndex: "index",
@@ -95,7 +91,6 @@ const
     },
     {
       dataIndex: "type",
-      filteredValue: filteredInfo.type ?? null,
       filters: MONSTER_TYPE_FILTER_OPTIONS,
       key: "type",
       onFilter: (value, record) => record.type === value,
@@ -103,10 +98,9 @@ const
     },
     {
       dataIndex: "isInCurrentWorld",
-      filteredValue: filteredInfo.isInCurrentWorld ?? null,
       filters: CURRENT_WORLD_FILTER_OPTIONS,
       key: "isInCurrentWorld",
-      onFilter: (value, record) => record.isInCurrentWorld === value,
+      onFilter: (value, record) => record.isInCurrentWorld === (value === CURRENT_WORLD_YES),
       render: (isInCurrentWorld: boolean | undefined) => {
         if (isInCurrentWorld) {
           return <Tag color="green">{CURRENT_WORLD_YES}</Tag>;

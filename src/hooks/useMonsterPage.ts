@@ -3,6 +3,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
   EDIT_SUCCESS_MESSAGE,
   ELITE_MONSTER_TYPE,
+  NO_TIME_RECORD_SUCCESS_MESSAGE,
   SELECT_DATE_MESSAGE_PREFIX,
   STATE_VALUE_INDEX,
   TIMER_CANCEL_MESSAGE,
@@ -95,6 +96,10 @@ interface UseMonsterPageResult {
    */
   onConfirmRecord: () => Promise<void>;
   /**
+   * 不计用时直接插入记录
+   */
+  onInsertNoTimeRecord: () => Promise<void>;
+  /**
    * 删除记录
    * @param id 怪物 id
    */
@@ -179,6 +184,25 @@ const useMonsterPage = (): UseMonsterPageResult => {
         // 校验失败时 Ant Design 会自动展示错误提示
       }
     },
+    handleInsertNoTimeRecord = async (): Promise<void> => {
+      try {
+        const
+          values: FormValues = await form.validateFields(),
+          newMonster: Monster = {
+            count: Number(values.count),
+            id: uuidv4(),
+            isInCurrentWorld: values.isInCurrentWorld,
+            name: values.name,
+            time: Date.now(),
+            type: values.type,
+            usedTime: 0,
+          };
+        await monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]);
+        message.success(NO_TIME_RECORD_SUCCESS_MESSAGE);
+      } catch {
+        // 校验失败时 Ant Design 会自动展示错误提示
+      }
+    },
     handleDeleteMonster = async (id: string): Promise<void> => {
       const nextMonsters = monsterStorage.monsters.filter((monster) => monster.id !== id);
       await monsterStorage.saveMonsters(nextMonsters);
@@ -256,6 +280,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
     onConfirmRecord: handleConfirmRecord,
     onDeleteMonster: handleDeleteMonster,
     onEditMonster: handleEditMonster,
+    onInsertNoTimeRecord: handleInsertNoTimeRecord,
     onPauseTimer: handlePauseTimer,
     onResumeTimer: handleResumeTimer,
     onSelectDate: handleSelectDate,

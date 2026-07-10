@@ -132,7 +132,7 @@ const
       dataIndex: "usedTime",
       key: "usedTime",
       render: (usedTime?: number) => {
-        if (usedTime) {
+        if (typeof usedTime !== "undefined") {
           return formatElapsedTime(usedTime);
         }
         return EMPTY_NAME_LIST_TEXT;

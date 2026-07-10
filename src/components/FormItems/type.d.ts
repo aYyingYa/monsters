@@ -27,6 +27,10 @@ export interface FormItemsProps {
    */
   onConfirmRecord: () => void;
   /**
+   * 不计用时直接插入记录
+   */
+  onInsertNoTimeRecord: () => Promise<void>;
+  /**
    * 暂停计时回调
    */
   onPauseTimer: () => void;

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import createLocalForageMonsterService from "../services/localForageMonsterService";
 import type { Monster } from "../types/App";
@@ -41,13 +42,14 @@ const useMonsterStorage = (): UseMonsterStorageResult => {
   // #region 状态与工具函数
   const
     /**
-     * 获取本地时区当前日期字符串
+     * 游戏日期切换小时数（怪物每天凌晨4点刷新）
+     */
+    GAME_DATE_ROLL_HOUR = 4,
+    /**
+     * 获取以凌晨4点为基准的游戏日期字符串
      * @returns 格式为 YYYY-MM-DD 的日期
      */
-    getTodayDateString = (): string => {
-      const now = new Date();
-      return now.toLocaleDateString("zh-CN", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//gu, "-");
-    },
+    getTodayDateString = (): string => dayjs().subtract(GAME_DATE_ROLL_HOUR, "hour").format("YYYY-MM-DD"),
     storageService = createLocalForageMonsterService(),
     today = getTodayDateString(),
     [activeDate, setActiveDate] = useState(today),

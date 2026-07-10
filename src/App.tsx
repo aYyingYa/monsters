@@ -34,6 +34,7 @@ const App: React.FC = () => {
     onConfirmRecord,
     onDeleteMonster,
     onEditMonster,
+    onInsertNoTimeRecord,
     onPauseTimer,
     onResumeTimer,
     onSelectDate,
@@ -61,6 +62,7 @@ const App: React.FC = () => {
             nameHistory={nameHistory}
             onCancelRecord={onCancelRecord}
             onConfirmRecord={onConfirmRecord}
+            onInsertNoTimeRecord={onInsertNoTimeRecord}
             onPauseTimer={onPauseTimer}
             onResumeTimer={onResumeTimer}
             onStartTimer={onStartTimer}

@@ -22,6 +22,7 @@ const FormItems: React.FC<FormItemsProps> = (props) => {
     nameHistory,
     onCancelRecord,
     onConfirmRecord,
+    onInsertNoTimeRecord,
     onPauseTimer,
     onResumeTimer,
     onStartTimer,
@@ -52,6 +53,7 @@ const FormItems: React.FC<FormItemsProps> = (props) => {
             mode={mode}
             onCancelRecord={onCancelRecord}
             onConfirmRecord={onConfirmRecord}
+            onInsertNoTimeRecord={onInsertNoTimeRecord}
             onPauseTimer={onPauseTimer}
             onResumeTimer={onResumeTimer}
             onStartTimer={onStartTimer}

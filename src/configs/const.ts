@@ -130,6 +130,14 @@ export const
   TIMER_RESUME_MESSAGE = "继续计时",
   /** 开始计时提示 */
   TIMER_START_MESSAGE = "开始计时",
+  /** 不计用时确认提示取消按钮文案 */
+  NO_TIME_RECORD_CANCEL_TEXT = "取消",
+  /** 不计用时确认提示标题 */
+  NO_TIME_RECORD_CONFIRM_TITLE = "是否不计用时记录？",
+  /** 不计用时确认提示确认按钮文案 */
+  NO_TIME_RECORD_OK_TEXT = "确认",
+  /** 不计用时记录成功提示 */
+  NO_TIME_RECORD_SUCCESS_MESSAGE = "不计用时记录成功",
   /** 零值常量 */
   ZERO = 0;
 // #endregion

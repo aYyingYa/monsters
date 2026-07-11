@@ -9,6 +9,8 @@ export const
   ACTION_LABEL = "操作",
   /** 统计卡片与表单间距（像素） */
   COUNT_CARD_MARGIN_BOTTOM = 20,
+  /** 统计卡片已上限文案 */
+  COUNT_CARD_LIMIT_REACHED_TEXT = "已上限",
   /** 统计卡片无单车数据时车数占位文案 */
   COUNT_CARD_NO_CELL_CAR_TEXT = "未设置单车数量",
   /** 统计卡片无单车数据时前缀文案 */

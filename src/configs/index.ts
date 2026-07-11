@@ -1,6 +1,7 @@
 export { createColumns } from "./columns";
 export {
   ACTION_LABEL,
+  COUNT_CARD_LIMIT_REACHED_TEXT,
   COUNT_CARD_MARGIN_BOTTOM,
   COUNT_CARD_NO_CELL_CAR_TEXT,
   COUNT_CARD_NO_CELL_PREFIX,

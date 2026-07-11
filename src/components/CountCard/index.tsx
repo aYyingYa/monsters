@@ -1,4 +1,5 @@
 import {
+  COUNT_CARD_LIMIT_REACHED_TEXT,
   COUNT_CARD_MARGIN_BOTTOM,
   COUNT_CARD_NOT_IN_WORLD_PREFIX,
   COUNT_CARD_NO_CELL_CAR_TEXT,
@@ -33,6 +34,17 @@ const
     return COUNT_CARD_NO_CELL_CAR_TEXT;
   },
   /**
+   * 计算剩余数量展示文案
+   * @param remaining 剩余数量
+   * @returns 展示文案
+   */
+  buildRemainingText = (remaining: number): string => {
+    if (remaining <= ZERO) {
+      return COUNT_CARD_LIMIT_REACHED_TEXT;
+    }
+    return `${COUNT_CARD_NO_CELL_PREFIX}${remaining}${COUNT_CARD_NO_CELL_SUFFIX}`;
+  },
+  /**
    * 怪物统计卡片
    * @param props 组件属性
    * @returns 统计卡片控件
@@ -50,7 +62,7 @@ const
       } = props,
       remaining = Math.max(limit - count, ZERO),
       carText = buildCarText(targetName, remaining, cell),
-      remainingText = `${COUNT_CARD_NO_CELL_PREFIX}${remaining}${COUNT_CARD_NO_CELL_SUFFIX}`,
+      remainingText = buildRemainingText(remaining),
       nameListDisplay = inCurrentWorldNames.join(NAME_LIST_SEPARATOR) || EMPTY_NAME_LIST_TEXT,
       cardRef = useRef<HTMLDivElement>(null),
       { message } = App.useApp(),

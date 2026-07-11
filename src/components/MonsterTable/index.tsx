@@ -31,7 +31,7 @@ const MonsterTable: React.FC<MonsterTableProps> = (props) => {
   return (
     <Table
       columns={columns}
-      dataSource={monsters}
+      dataSource={[...monsters].reverse()}
       onChange={onTableChange}
       pagination={{
         showPrevNextJumpers: true,

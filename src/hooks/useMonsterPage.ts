@@ -18,14 +18,12 @@ import { App, Form, type TableProps } from "antd";
 import type { SortOrder } from "antd/es/table/interface";
 import type { FormInstance } from "antd/es/form";
 import { reduceMonsterCount } from "../utils/calc";
+import useMonsterHistory from "./useMonsterHistory";
 import useMonsterStorage from "./useMonsterStorage";
 import useMonsterTimer from "./useMonsterTimer";
 import { v4 as uuidv4 } from "uuid";
 
 // #region 类型定义
-/**
- * 页面数据钩子返回结果
- */
 interface UseMonsterPageResult {
   activeDate: string;
   availableDates: string[];
@@ -44,6 +42,7 @@ interface UseMonsterPageResult {
   onCancelRecord: () => void;
   onConfirmRecord: () => Promise<void>;
   onInsertNoTimeRecord: () => Promise<void>;
+  onNameSelect: (name: string) => void;
   onDeleteMonster: (id: string) => Promise<void>;
   onEditMonster: (monster: Monster) => void;
   onPauseTimer: () => void;
@@ -56,10 +55,6 @@ interface UseMonsterPageResult {
 // #endregion
 
 // #region 页面数据钩子
-/**
- * 聚合计时、表单校验与记录逻辑的页面钩子
- * @returns 页面所需数据与回调
- */
 const useMonsterPage = (): UseMonsterPageResult => {
   // #region 状态、引用与回调
   const
@@ -67,13 +62,12 @@ const useMonsterPage = (): UseMonsterPageResult => {
     { message } = App.useApp(),
     monsterStorage = useMonsterStorage(),
     monsterTimer = useMonsterTimer(),
+    monsterHistory = useMonsterHistory(),
     [editMonster, setEditMonster] = useState<Monster | null>(null),
     [editModalOpen, setEditModalOpen] = useState(false),
     [sortInfo, setSortInfo] = useState<{ columnKey: string; order: SortOrder } | null>(null),
     monstersRef = useRef(monsterStorage.monsters),
     saveMonstersRef = useRef(monsterStorage.saveMonsters),
-    countHistory = [...new Set(monsterStorage.monsters.map((monster) => monster.count.toString()))],
-    nameHistory = [...new Set(monsterStorage.monsters.map((monster) => monster.name))],
     handleCancelEdit = (): void => {
       setEditModalOpen(false);
       setEditMonster(null);
@@ -97,7 +91,10 @@ const useMonsterPage = (): UseMonsterPageResult => {
             usedTime: elapsed,
           };
         form.setFieldValue("usedTime", elapsed);
-        await monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]);
+        await Promise.all([
+          monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]),
+          monsterHistory.saveNameCount(values.name, values.count),
+        ]);
         message.success(TIMER_CONFIRM_MESSAGE);
       } catch {
         // 校验失败时 Ant Design 会自动展示错误提示
@@ -116,29 +113,30 @@ const useMonsterPage = (): UseMonsterPageResult => {
             type: values.type,
             usedTime: 0,
           };
-        await monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]);
+        await Promise.all([
+          monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]),
+          monsterHistory.saveNameCount(values.name, values.count),
+        ]);
         message.success(NO_TIME_RECORD_SUCCESS_MESSAGE);
       } catch {
         // 校验失败时 Ant Design 会自动展示错误提示
       }
     },
-    /**
-     * 删除指定怪物记录
-     * @param id 怪物 id
-     */
     handleDeleteMonster = useCallback(async (id: string): Promise<void> => {
       const nextMonsters = monstersRef.current.filter((monster) => monster.id !== id);
       await saveMonstersRef.current(nextMonsters);
       message.success(DELETE_SUCCESS_MESSAGE);
     }, [message]),
-    /**
-     * 打开编辑弹窗
-     * @param monster 怪物对象
-     */
     handleEditMonster = useCallback((monster: Monster): void => {
       setEditMonster(monster);
       setEditModalOpen(true);
     }, []),
+    handleNameSelect = (name: string): void => {
+      const count = monsterHistory.nameCountMap[name];
+      if (typeof count !== "undefined") {
+        form.setFieldValue("count", count);
+      }
+    },
     handlePauseTimer = (): void => {
       monsterTimer.pauseTimer();
       message.success(TIMER_PAUSE_MESSAGE);
@@ -181,7 +179,10 @@ const useMonsterPage = (): UseMonsterPageResult => {
           type: values.type,
         };
       });
-      await monsterStorage.saveMonsters(nextMonsters);
+      await Promise.all([
+        monsterStorage.saveMonsters(nextMonsters),
+        monsterHistory.saveNameCount(values.name, values.count),
+      ]);
       setEditModalOpen(false);
       setEditMonster(null);
       message.success(EDIT_SUCCESS_MESSAGE);
@@ -196,7 +197,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
   return {
     activeDate: monsterStorage.activeDate,
     availableDates: monsterStorage.availableDates,
-    countHistory,
+    countHistory: monsterHistory.countHistory,
     defaultMonsterCount: reduceMonsterCount(monsterStorage.monsters, DEFAULT_MONSTER_TYPE),
     editModalOpen,
     editMonster,
@@ -205,13 +206,14 @@ const useMonsterPage = (): UseMonsterPageResult => {
     form,
     mode: monsterTimer.mode,
     monsters: monsterStorage.monsters,
-    nameHistory,
+    nameHistory: monsterHistory.nameHistory,
     onCancelEdit: handleCancelEdit,
     onCancelRecord: handleCancelRecord,
     onConfirmRecord: handleConfirmRecord,
     onDeleteMonster: handleDeleteMonster,
     onEditMonster: handleEditMonster,
     onInsertNoTimeRecord: handleInsertNoTimeRecord,
+    onNameSelect: handleNameSelect,
     onPauseTimer: handlePauseTimer,
     onResumeTimer: handleResumeTimer,
     onSelectDate: handleSelectDate,

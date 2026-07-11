@@ -31,6 +31,11 @@ export interface FormItemsProps {
    */
   onInsertNoTimeRecord: () => Promise<void>;
   /**
+   * 选择历史名称回调
+   * @param name 选中的名称
+   */
+  onNameSelect: (name: string) => void;
+  /**
    * 暂停计时回调
    */
   onPauseTimer: () => void;

@@ -23,6 +23,7 @@ const FormItems: React.FC<FormItemsProps> = (props) => {
     onCancelRecord,
     onConfirmRecord,
     onInsertNoTimeRecord,
+    onNameSelect,
     onPauseTimer,
     onResumeTimer,
     onStartTimer,
@@ -37,7 +38,7 @@ const FormItems: React.FC<FormItemsProps> = (props) => {
           <TypeSelect />
         </Col>
         <Col span={4}>
-          <NameInput nameHistory={nameHistory} />
+          <NameInput nameHistory={nameHistory} onNameSelect={onNameSelect} />
         </Col>
         <Col span={4}>
           <CountInput countHistory={countHistory} />

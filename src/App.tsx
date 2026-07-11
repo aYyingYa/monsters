@@ -34,6 +34,7 @@ const App: React.FC = () => {
     onDeleteMonster,
     onEditMonster,
     onInsertNoTimeRecord,
+    onNameSelect,
     onPauseTimer,
     onResumeTimer,
     onSelectDate,
@@ -62,6 +63,7 @@ const App: React.FC = () => {
             onCancelRecord={onCancelRecord}
             onConfirmRecord={onConfirmRecord}
             onInsertNoTimeRecord={onInsertNoTimeRecord}
+            onNameSelect={onNameSelect}
             onPauseTimer={onPauseTimer}
             onResumeTimer={onResumeTimer}
             onStartTimer={onStartTimer}
@@ -85,6 +87,7 @@ const App: React.FC = () => {
           initialValues={editMonster}
           nameHistory={nameHistory}
           onCancel={onCancelEdit}
+          onNameSelect={onNameSelect}
           onOk={onSubmitEdit}
           open={editModalOpen}
         />

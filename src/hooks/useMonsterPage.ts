@@ -93,7 +93,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
         form.setFieldValue("usedTime", elapsed);
         await Promise.all([
           monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]),
-          monsterHistory.saveNameCount(values.name, values.count),
+          monsterHistory.saveMonsterHistory(values.name, values.type, values.count),
         ]);
         message.success(TIMER_CONFIRM_MESSAGE);
       } catch {
@@ -115,7 +115,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
           };
         await Promise.all([
           monsterStorage.saveMonsters([...monsterStorage.monsters, newMonster]),
-          monsterHistory.saveNameCount(values.name, values.count),
+          monsterHistory.saveMonsterHistory(values.name, values.type, values.count),
         ]);
         message.success(NO_TIME_RECORD_SUCCESS_MESSAGE);
       } catch {
@@ -132,9 +132,10 @@ const useMonsterPage = (): UseMonsterPageResult => {
       setEditModalOpen(true);
     }, []),
     handleNameSelect = (name: string): void => {
-      const count = monsterHistory.nameCountMap[name];
-      if (typeof count !== "undefined") {
-        form.setFieldValue("count", count);
+      const record = monsterHistory.nameMonsterMap[name];
+      if (typeof record !== "undefined") {
+        form.setFieldValue("type", record.type);
+        form.setFieldValue("count", record.count);
       }
     },
     handlePauseTimer = (): void => {
@@ -181,7 +182,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
       });
       await Promise.all([
         monsterStorage.saveMonsters(nextMonsters),
-        monsterHistory.saveNameCount(values.name, values.count),
+        monsterHistory.saveMonsterHistory(values.name, values.type, values.count),
       ]);
       setEditModalOpen(false);
       setEditMonster(null);

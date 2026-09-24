@@ -1,11 +1,9 @@
+import type { NameMonsterMap } from "../../services/monsterHistoryService";
+
 /**
  * 组件FormItems的属性
  */
 export interface FormItemsProps {
-  /**
-   * 历史数量选项
-   */
-  countHistory: string[];
   /**
    * 已运行的毫秒数
    */
@@ -15,9 +13,9 @@ export interface FormItemsProps {
    */
   mode: "idle" | "paused" | "running";
   /**
-   * 历史名称选项
+   * 名称到怪物属性的映射
    */
-  nameHistory: string[];
+  nameMonsterMap: NameMonsterMap;
   /**
    * 取消当前计时且不记录
    */
@@ -30,11 +28,6 @@ export interface FormItemsProps {
    * 不计用时直接插入记录
    */
   onInsertNoTimeRecord: () => Promise<void>;
-  /**
-   * 选择历史名称回调
-   * @param name 选中的名称
-   */
-  onNameSelect: (name: string) => void;
   /**
    * 暂停计时回调
    */

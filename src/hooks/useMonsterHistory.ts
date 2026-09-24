@@ -1,40 +1,23 @@
 import { useEffect, useState } from "react";
 import type { MonsterType } from "../configs";
-import { loadNameMonsterMap, saveNameMonsterMap } from "../services/monsterHistoryService";
+import {
+  type MonsterHistoryRecord,
+  type NameMonsterMap,
+  loadNameMonsterMap,
+  saveNameMonsterMap,
+} from "../services/monsterHistoryService";
 
 // #region 类型定义
-/**
- * 怪物属性绑定记录
- */
-interface MonsterHistoryRecord {
-  /**
-   * 怪物数量
-   */
-  count: string;
-  /**
-   * 怪物类型
-   */
-  type: MonsterType;
-}
-
 /**
  * 怪物历史 Hook 返回结果
  */
 interface UseMonsterHistoryResult {
   /**
-   * 去重后的历史数量选项
-   */
-  countHistory: string[];
-  /**
    * 名称到怪物属性的映射
    */
-  nameMonsterMap: Record<string, MonsterHistoryRecord>;
+  nameMonsterMap: NameMonsterMap;
   /**
-   * 去重后的历史名称选项
-   */
-  nameHistory: string[];
-  /**
-   * 保存名称与怪物属性的绑定关系
+   * 保存名称与怪物属性的绑定关系（数量历史去重合并，最近使用在前）
    * @param name 怪物名称
    * @param type 怪物类型
    * @param count 怪物数量
@@ -49,11 +32,21 @@ interface UseMonsterHistoryResult {
  * @returns 历史记录状态与操作
  */
 const useMonsterHistory = (): UseMonsterHistoryResult => {
-  // #region 状态、计算属性与保存
+  // #region 状态、合并工具与保存
   const
-    [nameMonsterMap, setNameMonsterMap] = useState<Record<string, MonsterHistoryRecord>>({}),
-    nameHistory = Object.keys(nameMonsterMap),
-    countHistory = [...new Set(Object.values(nameMonsterMap).map((record) => record.count))].sort(),
+    [nameMonsterMap, setNameMonsterMap] = useState<NameMonsterMap>({}),
+    /**
+     * 合并数量历史：本次数量提到最前，并去掉旧值中的重复项
+     * @param existingRecord 已有的绑定记录
+     * @param count 本次保存的数量
+     * @returns 去重后的数量历史
+     */
+    mergeCounts = (existingRecord: MonsterHistoryRecord | undefined, count: string): string[] => {
+      if (typeof existingRecord === "undefined") {
+        return [count];
+      }
+      return [count, ...existingRecord.counts.filter((historyCount) => historyCount !== count)];
+    },
     /**
      * 保存名称与怪物属性的绑定关系
      * @param name 怪物名称
@@ -61,7 +54,10 @@ const useMonsterHistory = (): UseMonsterHistoryResult => {
      * @param count 怪物数量
      */
     saveMonsterHistory = async (name: string, type: MonsterType, count: string): Promise<void> => {
-      const nextMap = { ...nameMonsterMap, [name]: { count, type } };
+      const nextMap: NameMonsterMap = {
+        ...nameMonsterMap,
+        [name]: { counts: mergeCounts(nameMonsterMap[name], count), type },
+      };
       setNameMonsterMap(nextMap);
       await saveNameMonsterMap(nextMap);
     };
@@ -85,8 +81,6 @@ const useMonsterHistory = (): UseMonsterHistoryResult => {
   // #endregion
 
   return {
-    countHistory,
-    nameHistory,
     nameMonsterMap,
     saveMonsterHistory,
   };

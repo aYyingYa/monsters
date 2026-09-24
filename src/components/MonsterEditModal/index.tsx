@@ -15,7 +15,7 @@ import TypeSelect from "../FormItems/TypeSelect";
 const MonsterEditModal: React.FC<MonsterEditModalProps> = (props) => {
   // #region 属性、表单与提交
   const
-    { countHistory, initialValues, nameHistory, onCancel, onNameSelect, onOk, open } = props,
+    { initialValues, nameMonsterMap, onCancel, onOk, open } = props,
     [form] = Form.useForm<FormValues>(),
     handleOk = (): void => {
       form.validateFields()
@@ -56,8 +56,8 @@ const MonsterEditModal: React.FC<MonsterEditModalProps> = (props) => {
     >
       <Form form={form} layout="vertical">
         <TypeSelect />
-        <NameInput nameHistory={nameHistory} onNameSelect={onNameSelect} />
-        <CountInput countHistory={countHistory} />
+        <NameInput nameMonsterMap={nameMonsterMap} />
+        <CountInput nameMonsterMap={nameMonsterMap} />
         <IsInCurrentWorldSwitch />
       </Form>
     </Modal>

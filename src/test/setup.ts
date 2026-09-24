@@ -21,6 +21,12 @@ const WIDTH_SM = 576,
   noop = (): void => {
     // Mock empty implementation
   },
+  /** 供 antd 下拉组件使用的 ResizeObserver 替身（jsdom 环境缺失） */
+  ResizeObserverMock = class {
+    observe = noop;
+    unobserve = noop;
+    disconnect = noop;
+  },
   getMinWidth = (query: string): number => QUERY_WIDTH_MAP[query] ?? DEFAULT_MIN_WIDTH;
 
 Object.defineProperty(window, "matchMedia", {
@@ -39,5 +45,10 @@ Object.defineProperty(window, "matchMedia", {
       removeListener: noop,
     };
   },
+  writable: true,
+});
+
+Object.defineProperty(window, "ResizeObserver", {
+  value: ResizeObserverMock,
   writable: true,
 });

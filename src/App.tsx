@@ -17,7 +17,6 @@ const App: React.FC = () => {
   const {
     activeDate,
     availableDates,
-    countHistory,
     defaultMonsterCount,
     editMonster,
     editModalOpen,
@@ -26,7 +25,7 @@ const App: React.FC = () => {
     form,
     mode,
     monsters,
-    nameHistory,
+    nameMonsterMap,
     sortInfo,
     onCancelEdit,
     onCancelRecord,
@@ -34,7 +33,6 @@ const App: React.FC = () => {
     onDeleteMonster,
     onEditMonster,
     onInsertNoTimeRecord,
-    onNameSelect,
     onPauseTimer,
     onResumeTimer,
     onSelectDate,
@@ -56,14 +54,12 @@ const App: React.FC = () => {
         />
         <Form form={form} layout="vertical">
           <FormItems
-            countHistory={countHistory}
             elapsedMs={elapsedMs}
             mode={mode}
-            nameHistory={nameHistory}
+            nameMonsterMap={nameMonsterMap}
             onCancelRecord={onCancelRecord}
             onConfirmRecord={onConfirmRecord}
             onInsertNoTimeRecord={onInsertNoTimeRecord}
-            onNameSelect={onNameSelect}
             onPauseTimer={onPauseTimer}
             onResumeTimer={onResumeTimer}
             onStartTimer={onStartTimer}
@@ -83,11 +79,9 @@ const App: React.FC = () => {
           sortInfo={sortInfo}
         />
         <MonsterEditModal
-          countHistory={countHistory}
           initialValues={editMonster}
-          nameHistory={nameHistory}
+          nameMonsterMap={nameMonsterMap}
           onCancel={onCancelEdit}
-          onNameSelect={onNameSelect}
           onOk={onSubmitEdit}
           open={editModalOpen}
         />

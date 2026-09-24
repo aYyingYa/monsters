@@ -7,13 +7,13 @@ import localforage from "localforage";
  */
 interface MonsterHistoryRecord {
   /**
-   * 怪物数量
-   */
-  count: string;
-  /**
    * 怪物类型
    */
   type: MonsterType;
+  /**
+   * 该怪物的数量选择历史（去重，最近使用在前）
+   */
+  counts: string[];
 }
 
 /**
@@ -37,12 +37,18 @@ const
     version: 1,
   }),
   /**
-   * 加载名称怪物映射
+   * 加载名称怪物映射（旧版单数量结构的记录直接丢弃）
    * @returns 名称到怪物属性的映射对象
    */
   loadNameMonsterMap = async (): Promise<NameMonsterMap> => {
-    const nameMonsterMap = await storage.getItem<NameMonsterMap>(NAME_MONSTER_MAP_KEY);
-    return nameMonsterMap ?? {};
+    const storedMap = await storage.getItem<NameMonsterMap>(NAME_MONSTER_MAP_KEY);
+    if (storedMap === null) {
+      return {};
+    }
+    // 旧版记录没有 counts 数组字段，过滤丢弃避免脏数据
+    return Object.fromEntries(
+      Object.entries(storedMap).filter(([, record]) => Array.isArray(record.counts)),
+    );
   },
   /**
    * 保存名称怪物映射

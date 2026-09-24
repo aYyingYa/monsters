@@ -1,26 +1,18 @@
 import type { FormValues, Monster } from "../../types/App";
+import type { NameMonsterMap } from "../../services/monsterHistoryService";
 
 /**
  * 怪物编辑弹窗组件属性
  */
 interface MonsterEditModalProps {
   /**
-   * 数量历史选项
-   */
-  countHistory: string[];
-  /**
    * 编辑初始值
    */
   initialValues: Monster | null;
   /**
-   * 名称历史选项
+   * 名称到怪物属性的映射
    */
-  nameHistory: string[];
-  /**
-   * 选择历史名称回调
-   * @param name 选中的名称
-   */
-  onNameSelect: (name: string) => void;
+  nameMonsterMap: NameMonsterMap;
   /**
    * 取消回调
    */

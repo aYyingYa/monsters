@@ -24,14 +24,12 @@ const { useBreakpoint } = Grid,
   FormItems: React.FC<FormItemsProps> = (props) => {
     // #region 解构属性与断点判断
     const {
-        countHistory,
         elapsedMs,
         mode,
-        nameHistory,
+        nameMonsterMap,
         onCancelRecord,
         onConfirmRecord,
         onInsertNoTimeRecord,
-        onNameSelect,
         onPauseTimer,
         onResumeTimer,
         onStartTimer,
@@ -52,10 +50,10 @@ const { useBreakpoint } = Grid,
                   <TypeSelect />
                 </Col>
                 <Col span={SPAN_THIRD}>
-                  <NameInput nameHistory={nameHistory} onNameSelect={onNameSelect} />
+                  <NameInput nameMonsterMap={nameMonsterMap} />
                 </Col>
                 <Col span={SPAN_THIRD}>
-                  <CountInput countHistory={countHistory} />
+                  <CountInput nameMonsterMap={nameMonsterMap} />
                 </Col>
               </Row>
             </Col>
@@ -101,10 +99,10 @@ const { useBreakpoint } = Grid,
             <TypeSelect />
           </Col>
           <Col span={SPAN_SIXTH}>
-            <NameInput nameHistory={nameHistory} onNameSelect={onNameSelect} />
+            <NameInput nameMonsterMap={nameMonsterMap} />
           </Col>
           <Col span={SPAN_SIXTH}>
-            <CountInput countHistory={countHistory} />
+            <CountInput nameMonsterMap={nameMonsterMap} />
           </Col>
           <Col span={SPAN_SIXTH}>
             <IsInCurrentWorldSwitch />

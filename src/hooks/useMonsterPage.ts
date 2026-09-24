@@ -17,6 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { App, Form, type TableProps } from "antd";
 import type { SortOrder } from "antd/es/table/interface";
 import type { FormInstance } from "antd/es/form";
+import type { NameMonsterMap } from "../services/monsterHistoryService";
 import { reduceMonsterCount } from "../utils/calc";
 import useMonsterHistory from "./useMonsterHistory";
 import useMonsterStorage from "./useMonsterStorage";
@@ -27,7 +28,6 @@ import { v4 as uuidv4 } from "uuid";
 interface UseMonsterPageResult {
   activeDate: string;
   availableDates: string[];
-  countHistory: string[];
   editMonster: Monster | null;
   editModalOpen: boolean;
   defaultMonsterCount: number;
@@ -36,13 +36,12 @@ interface UseMonsterPageResult {
   form: FormInstance<FormValues>;
   mode: "idle" | "paused" | "running";
   monsters: Monster[];
-  nameHistory: string[];
+  nameMonsterMap: NameMonsterMap;
   sortInfo: { columnKey: string; order: SortOrder } | null;
   onCancelEdit: () => void;
   onCancelRecord: () => void;
   onConfirmRecord: () => Promise<void>;
   onInsertNoTimeRecord: () => Promise<void>;
-  onNameSelect: (name: string) => void;
   onDeleteMonster: (id: string) => Promise<void>;
   onEditMonster: (monster: Monster) => void;
   onPauseTimer: () => void;
@@ -131,13 +130,6 @@ const useMonsterPage = (): UseMonsterPageResult => {
       setEditMonster(monster);
       setEditModalOpen(true);
     }, []),
-    handleNameSelect = (name: string): void => {
-      const record = monsterHistory.nameMonsterMap[name];
-      if (typeof record !== "undefined") {
-        form.setFieldValue("type", record.type);
-        form.setFieldValue("count", record.count);
-      }
-    },
     handlePauseTimer = (): void => {
       monsterTimer.pauseTimer();
       message.success(TIMER_PAUSE_MESSAGE);
@@ -198,7 +190,6 @@ const useMonsterPage = (): UseMonsterPageResult => {
   return {
     activeDate: monsterStorage.activeDate,
     availableDates: monsterStorage.availableDates,
-    countHistory: monsterHistory.countHistory,
     defaultMonsterCount: reduceMonsterCount(monsterStorage.monsters, DEFAULT_MONSTER_TYPE),
     editModalOpen,
     editMonster,
@@ -207,14 +198,13 @@ const useMonsterPage = (): UseMonsterPageResult => {
     form,
     mode: monsterTimer.mode,
     monsters: monsterStorage.monsters,
-    nameHistory: monsterHistory.nameHistory,
+    nameMonsterMap: monsterHistory.nameMonsterMap,
     onCancelEdit: handleCancelEdit,
     onCancelRecord: handleCancelRecord,
     onConfirmRecord: handleConfirmRecord,
     onDeleteMonster: handleDeleteMonster,
     onEditMonster: handleEditMonster,
     onInsertNoTimeRecord: handleInsertNoTimeRecord,
-    onNameSelect: handleNameSelect,
     onPauseTimer: handlePauseTimer,
     onResumeTimer: handleResumeTimer,
     onSelectDate: handleSelectDate,

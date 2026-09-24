@@ -34,11 +34,15 @@ const App: React.FC = () => {
     onEditMonster,
     onInsertNoTimeRecord,
     onPauseTimer,
+    onRemoveCount,
+    onRemoveRecord,
     onResumeTimer,
     onSelectDate,
     onStartTimer,
     onSubmitEdit,
     onTableChange,
+    onUpdateCount,
+    onUpdateRecord,
   } = useMonsterPage();
   // #endregion
 
@@ -61,8 +65,12 @@ const App: React.FC = () => {
             onConfirmRecord={onConfirmRecord}
             onInsertNoTimeRecord={onInsertNoTimeRecord}
             onPauseTimer={onPauseTimer}
+            onRemoveCount={onRemoveCount}
+            onRemoveRecord={onRemoveRecord}
             onResumeTimer={onResumeTimer}
             onStartTimer={onStartTimer}
+            onUpdateCount={onUpdateCount}
+            onUpdateRecord={onUpdateRecord}
           />
         </Form>
         <Divider size="middle" />
@@ -83,6 +91,10 @@ const App: React.FC = () => {
           nameMonsterMap={nameMonsterMap}
           onCancel={onCancelEdit}
           onOk={onSubmitEdit}
+          onRemoveCount={onRemoveCount}
+          onRemoveRecord={onRemoveRecord}
+          onUpdateCount={onUpdateCount}
+          onUpdateRecord={onUpdateRecord}
           open={editModalOpen}
         />
       </div>

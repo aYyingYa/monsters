@@ -31,8 +31,12 @@ const { useBreakpoint } = Grid,
         onConfirmRecord,
         onInsertNoTimeRecord,
         onPauseTimer,
+        onRemoveCount,
+        onRemoveRecord,
         onResumeTimer,
         onStartTimer,
+        onUpdateCount,
+        onUpdateRecord,
       } = props,
       screens = useBreakpoint(),
       isMobile = !screens.md;
@@ -50,10 +54,18 @@ const { useBreakpoint } = Grid,
                   <TypeSelect />
                 </Col>
                 <Col span={SPAN_THIRD}>
-                  <NameInput nameMonsterMap={nameMonsterMap} />
+                  <NameInput
+                    nameMonsterMap={nameMonsterMap}
+                    onRemoveRecord={onRemoveRecord}
+                    onUpdateRecord={onUpdateRecord}
+                  />
                 </Col>
                 <Col span={SPAN_THIRD}>
-                  <CountInput nameMonsterMap={nameMonsterMap} />
+                  <CountInput
+                    nameMonsterMap={nameMonsterMap}
+                    onRemoveCount={onRemoveCount}
+                    onUpdateCount={onUpdateCount}
+                  />
                 </Col>
               </Row>
             </Col>
@@ -99,10 +111,18 @@ const { useBreakpoint } = Grid,
             <TypeSelect />
           </Col>
           <Col span={SPAN_SIXTH}>
-            <NameInput nameMonsterMap={nameMonsterMap} />
+            <NameInput
+              nameMonsterMap={nameMonsterMap}
+              onRemoveRecord={onRemoveRecord}
+              onUpdateRecord={onUpdateRecord}
+            />
           </Col>
           <Col span={SPAN_SIXTH}>
-            <CountInput nameMonsterMap={nameMonsterMap} />
+            <CountInput
+              nameMonsterMap={nameMonsterMap}
+              onRemoveCount={onRemoveCount}
+              onUpdateCount={onUpdateCount}
+            />
           </Col>
           <Col span={SPAN_SIXTH}>
             <IsInCurrentWorldSwitch />

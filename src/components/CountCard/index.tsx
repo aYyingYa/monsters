@@ -1,10 +1,14 @@
 import {
+  COUNT_CARD_COPY_FAILURE_MESSAGE,
+  COUNT_CARD_COPY_SUCCESS_PREFIX,
+  COUNT_CARD_COPY_TITLE,
   COUNT_CARD_LIMIT_REACHED_TEXT,
   COUNT_CARD_MARGIN_BOTTOM,
   COUNT_CARD_NOT_IN_WORLD_PREFIX,
   COUNT_CARD_NO_CELL_CAR_TEXT,
   COUNT_CARD_NO_CELL_PREFIX,
   COUNT_CARD_NO_CELL_SUFFIX,
+  COUNT_CARD_PROGRESS_SEPARATOR,
   EMPTY_NAME_LIST_TEXT,
   NAME_LIST_SEPARATOR,
   SCREENSHOT_BUTTON_TITLE,
@@ -81,14 +85,31 @@ const
         } else {
           message.error(SCREENSHOT_FAILURE_MESSAGE);
         }
-      }, [capture, message]);
+      }, [capture, message]),
+      /** 复制数量进度文本（如 62/400）到剪贴板 */
+      handleCopyProgress = async (): Promise<void> => {
+        const progressText = `${count}${COUNT_CARD_PROGRESS_SEPARATOR}${limit}`;
+        try {
+          await navigator.clipboard.writeText(progressText);
+          message.success(`${COUNT_CARD_COPY_SUCCESS_PREFIX}${progressText}`);
+        } catch {
+          // 剪贴板权限被拒或非安全上下文时提示手动复制
+          message.error(COUNT_CARD_COPY_FAILURE_MESSAGE);
+        }
+      };
     // #endregion
 
     // #region 渲染
     return (
       <div ref={cardRef}>
         <Card
-          extra={<div><span style={{ fontSize: "24px" }}>{count}</span>\{limit}</div>}
+          extra={
+            <Tooltip title={COUNT_CARD_COPY_TITLE}>
+              <div data-testid="count-card-progress" onClick={handleCopyProgress} style={{ cursor: "pointer" }}>
+                <span style={{ fontSize: "24px" }}>{count}</span>\{limit}
+              </div>
+            </Tooltip>
+          }
           style={{ marginBottom: COUNT_CARD_MARGIN_BOTTOM }}
           title={
             <Space align="center" size={8}>

@@ -74,8 +74,8 @@ const { useBreakpoint } = Grid,
       screens = useBreakpoint(),
       isMobile = !screens.md,
       eliteCard = renderCountCard({
-        // 数量为 0（如类型切换后被清空）时 cell 置 false，避免把 0 当文本渲染
-        cell: monsterType === ELITE_MONSTER_TYPE && monsterCount > ZERO && monsterCount,
+        // 名称为空（未确定目标）或数量为 0（如类型切换后被清空）时 cell 置 false，避免无主语文案与 0 文本渲染
+        cell: monsterType === ELITE_MONSTER_TYPE && monsterName !== "" && monsterCount > ZERO && monsterCount,
         count: eliteMonsterCount,
         inCurrentWorldNames: inCurrentWorldEliteNames,
         limit: ELITE_MONSTER_COUNT_LIMIT,
@@ -83,7 +83,7 @@ const { useBreakpoint } = Grid,
         title: ELITE_MONSTER_TYPE,
       }),
       defaultCard = renderCountCard({
-        cell: monsterType === DEFAULT_MONSTER_TYPE && monsterCount > ZERO && monsterCount,
+        cell: monsterType === DEFAULT_MONSTER_TYPE && monsterName !== "" && monsterCount > ZERO && monsterCount,
         count: defaultMonsterCount,
         inCurrentWorldNames: inCurrentWorldDefaultNames,
         limit: DEFAULT_MONSTER_COUNT_LIMIT,

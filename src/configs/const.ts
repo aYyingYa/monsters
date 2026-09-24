@@ -9,6 +9,12 @@ export const
   ACTION_LABEL = "操作",
   /** 统计卡片与表单间距（像素） */
   COUNT_CARD_MARGIN_BOTTOM = 20,
+  /** 统计卡片进度复制失败提示 */
+  COUNT_CARD_COPY_FAILURE_MESSAGE = "复制失败，请手动复制",
+  /** 统计卡片进度复制成功提示前缀 */
+  COUNT_CARD_COPY_SUCCESS_PREFIX = "已复制：",
+  /** 统计卡片进度区域提示文案 */
+  COUNT_CARD_COPY_TITLE = "点击复制进度",
   /** 统计卡片已上限文案 */
   COUNT_CARD_LIMIT_REACHED_TEXT = "已上限",
   /** 统计卡片无单车数据时车数占位文案 */
@@ -19,6 +25,8 @@ export const
   COUNT_CARD_NO_CELL_SUFFIX = "只怪上限",
   /** 统计卡片“本世界已无”前缀文案 */
   COUNT_CARD_NOT_IN_WORLD_PREFIX = "本世界已无：",
+  /** 统计卡片进度文本分隔符（如 62/400） */
+  COUNT_CARD_PROGRESS_SEPARATOR = "/",
   /** 不在本世界展示文案 */
   CURRENT_WORLD_NO = "否",
   /** 在本世界展示文案 */

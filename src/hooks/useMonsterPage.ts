@@ -45,11 +45,15 @@ interface UseMonsterPageResult {
   onDeleteMonster: (id: string) => Promise<void>;
   onEditMonster: (monster: Monster) => void;
   onPauseTimer: () => void;
+  onRemoveCount: (name: string, count: string) => Promise<void>;
+  onRemoveRecord: (name: string) => Promise<void>;
   onResumeTimer: () => void;
   onSelectDate: (date: string) => Promise<void>;
   onStartTimer: () => void;
   onTableChange: TableProps<Monster>["onChange"];
   onSubmitEdit: (values: FormValues) => Promise<void>;
+  onUpdateCount: (name: string, oldCount: string, newCount: string) => Promise<void>;
+  onUpdateRecord: (oldName: string, name: string, counts: string[]) => Promise<void>;
 }
 // #endregion
 
@@ -206,11 +210,15 @@ const useMonsterPage = (): UseMonsterPageResult => {
     onEditMonster: handleEditMonster,
     onInsertNoTimeRecord: handleInsertNoTimeRecord,
     onPauseTimer: handlePauseTimer,
+    onRemoveCount: monsterHistory.removeCount,
+    onRemoveRecord: monsterHistory.removeMonsterRecord,
     onResumeTimer: handleResumeTimer,
     onSelectDate: handleSelectDate,
     onStartTimer: handleStartTimer,
     onSubmitEdit: handleSubmitEdit,
     onTableChange: handleTableChange,
+    onUpdateCount: monsterHistory.updateCount,
+    onUpdateRecord: monsterHistory.updateMonsterRecord,
     sortInfo,
   };
 };

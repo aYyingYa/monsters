@@ -13,6 +13,7 @@ const PC_WIDTH = 1200,
   ELAPSED_MS = 0,
   ELITE_NAME = "月铁",
   ELITE_COUNT_LATEST = "30",
+  ELITE_COUNT_MIDDLE = "28",
   ELITE_COUNT_OLD = "26",
   NORMAL_NAME = "小蜘蛛",
   NORMAL_COUNT = "100",
@@ -30,9 +31,9 @@ const PC_WIDTH = 1200,
   OK_BUTTON_TEXT = "OK",
   /** Popconfirm 确认按钮匹配模式（antd 按钮对两个汉字自动插入空格，可访问名含空白符） */
   CONFIRM_OK_PATTERN = /^确\s*认$/u,
-  /** 历史映射测试数据：精英怪月铁（数量历史 30、26），小怪小蜘蛛（数量历史 100） */
+  /** 历史映射测试数据：精英怪月铁（存储序 30、28、26 即最近使用序，下拉展示序为 30、26、28），小怪小蜘蛛（数量历史 100） */
   NAME_MONSTER_MAP: NameMonsterMap = {
-    [ELITE_NAME]: { counts: [ELITE_COUNT_LATEST, ELITE_COUNT_OLD], type: "精英怪" },
+    [ELITE_NAME]: { counts: [ELITE_COUNT_LATEST, ELITE_COUNT_MIDDLE, ELITE_COUNT_OLD], type: "精英怪" },
     [NORMAL_NAME]: { counts: [NORMAL_COUNT], type: "小怪" },
   },
   /**
@@ -173,13 +174,12 @@ describe("FormItems", () => {
     expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue(ELITE_COUNT_LATEST);
   });
 
-  it("shows count options bound to current name", async () => {
+  it("shows count options with latest first and the rest ascending", async () => {
     setViewportWidth(PC_WIDTH);
     renderFormItems();
     fireEvent.mouseDown(screen.getByLabelText(COUNT_FIELD_LABEL));
-    // 默认名称为月铁，数量选项应是月铁的全部历史数量
     await waitFor(() => {
-      expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD]);
+      expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD, ELITE_COUNT_MIDDLE]);
     });
   });
 
@@ -243,7 +243,7 @@ describe("FormItems", () => {
       });
       fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: OK_BUTTON_TEXT }));
       await waitFor(() => {
-        expect(onUpdateRecord).toHaveBeenCalledWith(ELITE_NAME, NEW_NAME, [ELITE_COUNT_LATEST, ELITE_COUNT_OLD]);
+        expect(onUpdateRecord).toHaveBeenCalledWith(ELITE_NAME, NEW_NAME, [ELITE_COUNT_LATEST, ELITE_COUNT_MIDDLE, ELITE_COUNT_OLD]);
       });
     });
 
@@ -270,7 +270,7 @@ describe("FormItems", () => {
       renderFormItems({ onUpdateCount });
       fireEvent.mouseDown(screen.getByLabelText(COUNT_FIELD_LABEL));
       await waitFor(() => {
-        expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD]);
+        expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD, ELITE_COUNT_MIDDLE]);
       });
       rightClickOption(COUNT_FIELD_LABEL, ELITE_COUNT_LATEST);
       fireEvent.click(await screen.findByTestId(MENU_EDIT_TEST_ID));
@@ -287,7 +287,7 @@ describe("FormItems", () => {
       renderFormItems({ onRemoveCount });
       fireEvent.mouseDown(screen.getByLabelText(COUNT_FIELD_LABEL));
       await waitFor(() => {
-        expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD]);
+        expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD, ELITE_COUNT_MIDDLE]);
       });
       rightClickOption(COUNT_FIELD_LABEL, ELITE_COUNT_LATEST);
       fireEvent.click(await screen.findByTestId(MENU_DELETE_TEST_ID));

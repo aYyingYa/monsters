@@ -17,7 +17,7 @@ interface UseMonsterHistoryResult {
    */
   nameMonsterMap: NameMonsterMap;
   /**
-   * 保存名称与怪物属性的绑定关系（数量历史去重合并，最近使用在前）
+   * 保存名称与怪物属性的绑定关系（名称按最近使用置顶，数量历史去重合并、最近使用在前）
    * @param name 怪物名称
    * @param type 怪物类型
    * @param count 怪物数量
@@ -107,15 +107,16 @@ const
         await saveNameMonsterMap(nextMap);
       },
       /**
-       * 保存名称与怪物属性的绑定关系
+       * 保存名称与怪物属性的绑定关系（名称按最近使用置顶）
        * @param name 怪物名称
        * @param type 怪物类型
        * @param count 怪物数量
        */
       saveMonsterHistory = async (name: string, type: MonsterType, count: string): Promise<void> => {
+        // 本次名称作为首键重建映射，其余键保持原相对顺序，键序即最近使用顺序
         await applyNextMap({
-          ...nameMonsterMap,
           [name]: { counts: mergeCounts(nameMonsterMap[name], count), type },
+          ...omitRecord(nameMonsterMap, name),
         });
       },
       /**

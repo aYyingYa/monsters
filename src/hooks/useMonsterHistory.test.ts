@@ -64,6 +64,24 @@ describe("useMonsterHistory", () => {
     expect(result.current.nameMonsterMap[ELITE_NAME]?.counts).toEqual([COUNT_FIRST, COUNT_SECOND]);
   });
 
+  it("moves the used name to the front of the map", async () => {
+    const { result } = renderHook(() => useMonsterHistory());
+    await waitFor(() => {
+      expect(loadState.called).toBe(true);
+    });
+    await act(async () => {
+      await result.current.saveMonsterHistory(ELITE_NAME, ELITE_TYPE, COUNT_FIRST);
+    });
+    await act(async () => {
+      await result.current.saveMonsterHistory(NEW_ELITE_NAME, ELITE_TYPE, COUNT_FIRST);
+    });
+    // 再次使用首个名称，应被提到最前
+    await act(async () => {
+      await result.current.saveMonsterHistory(ELITE_NAME, ELITE_TYPE, COUNT_SECOND);
+    });
+    expect(Object.keys(result.current.nameMonsterMap)).toEqual([ELITE_NAME, NEW_ELITE_NAME]);
+  });
+
   it("persists merged map to storage", async () => {
     const { result } = renderHook(() => useMonsterHistory());
     await waitFor(() => {

@@ -51,8 +51,28 @@ interface MenuState {
 }
 // #endregion
 
-// #region 组件
+// #region 纯函数工具与组件
 const
+  /**
+   * 数量数值升序比较器（数量入库前已经数值校验，直接转 Number 比较）
+   * @param prev 前一个数量
+   * @param next 后一个数量
+   * @returns 升序比较结果
+   */
+  compareCountBySize = (prev: string, next: string): number => Number(prev) - Number(next),
+  /**
+   * 生成数量展示列表：第一项保留最近使用，其余按数值升序
+   * @param counts 数量历史（存储序：最近使用在前）
+   * @returns 展示用数量列表
+   */
+  toDisplayCounts = (counts: string[]): string[] => {
+    const [latestCount, ...restCounts] = counts;
+    // 无历史数量时直接返回空列表
+    if (typeof latestCount === "undefined") {
+      return [];
+    }
+    return [latestCount, ...restCounts.sort(compareCountBySize)];
+  },
   /**
    * 怪物数量输入框（选项为当前名称的历史数量，支持右键编辑/删除历史选项）
    * @param props 组件属性
@@ -68,7 +88,7 @@ const
       currentName: string = watchedName ?? form.getFieldValue("name") ?? "",
       [menuState, setMenuState] = useState<MenuState | null>(null),
       [editingCount, setEditingCount] = useState<string | null>(null),
-      countOptions = (nameMonsterMap[currentName]?.counts ?? []).map((count) => ({ label: count, value: count })),
+      countOptions = toDisplayCounts(nameMonsterMap[currentName]?.counts ?? []).map((count) => ({ label: count, value: count })),
       /** 关闭右键菜单 */
       closeMenu = useCallback((): void => {
         setMenuState(null);

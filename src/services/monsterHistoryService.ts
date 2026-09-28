@@ -17,7 +17,7 @@ interface MonsterHistoryRecord {
 }
 
 /**
- * 名称到怪物属性的映射
+ * 名称到怪物属性的映射（键序即最近使用顺序，最近使用的名称在前）
  */
 type NameMonsterMap = Record<string, MonsterHistoryRecord>;
 // #endregion

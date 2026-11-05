@@ -1,8 +1,9 @@
-import { App, Button, Input, Modal, Space } from "antd";
+import { Button, Input, Modal, Space } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import type { NameEditModalProps } from "./type";
 import { validateInitInput } from "../../utils/inputNormalize";
+import useSafeMessage from "../../hooks/useSafeMessage";
 
 // #region 常量与组件
 const
@@ -30,7 +31,7 @@ const
     // #region 解构属性、编辑状态与行操作
     const
       { counts, existingNames, name, onCancel, onOk, open } = props,
-      { message } = App.useApp(),
+      message = useSafeMessage(),
       [editedName, setEditedName] = useState(name),
       [editedCounts, setEditedCounts] = useState<string[]>(counts),
       /**

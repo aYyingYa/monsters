@@ -14,7 +14,7 @@ import {
 } from "../configs";
 import type { FormValues, Monster } from "../types/App";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { App, Form, type TableProps } from "antd";
+import { Form, type TableProps } from "antd";
 import type { SortOrder } from "antd/es/table/interface";
 import type { FormInstance } from "antd/es/form";
 import type { NameMonsterMap } from "../services/monsterHistoryService";
@@ -22,6 +22,7 @@ import { reduceMonsterCount } from "../utils/calc";
 import useMonsterHistory from "./useMonsterHistory";
 import useMonsterStorage from "./useMonsterStorage";
 import useMonsterTimer from "./useMonsterTimer";
+import useSafeMessage from "./useSafeMessage";
 import { v4 as uuidv4 } from "uuid";
 
 // #region 类型定义
@@ -62,7 +63,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
   // #region 状态、引用与回调
   const
     form = Form.useForm<FormValues>()[STATE_VALUE_INDEX],
-    { message } = App.useApp(),
+    message = useSafeMessage(),
     monsterStorage = useMonsterStorage(),
     monsterTimer = useMonsterTimer(),
     monsterHistory = useMonsterHistory(),

@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "6.x",
-    "antd": "^6.5.0",
+    "antd": "^6.7.0",
     "dayjs": "^1.11.21",
     "html-to-image": "^1.11.13",
     "localforage": "^1.10.0",

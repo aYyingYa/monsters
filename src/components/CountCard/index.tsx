@@ -16,10 +16,11 @@ import {
   SCREENSHOT_SUCCESS_MESSAGE,
   ZERO,
 } from "../../configs";
-import { App, Button, Card, Col, Divider, Row, Space, Tooltip } from "antd";
+import { Button, Card, Col, Divider, Row, Space, Tooltip } from "antd";
 import { CameraOutlined } from "@ant-design/icons";
 import type { CountCardProps } from "./type";
 import React, { useCallback, useRef, useState } from "react";
+import useSafeMessage from "../../hooks/useSafeMessage";
 import useScreenshot from "../../hooks/useScreenshot";
 
 // #region 私有函数与统计卡片
@@ -69,7 +70,7 @@ const
       remainingText = buildRemainingText(remaining),
       nameListDisplay = inCurrentWorldNames.join(NAME_LIST_SEPARATOR) || EMPTY_NAME_LIST_TEXT,
       cardRef = useRef<HTMLDivElement>(null),
-      { message } = App.useApp(),
+      message = useSafeMessage(),
       { capture } = useScreenshot(),
       [screenshotLoading, setScreenshotLoading] = useState(false),
       handleScreenshot = useCallback(async (): Promise<void> => {

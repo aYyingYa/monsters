@@ -1,7 +1,8 @@
-import { App, Input, Modal, Space } from "antd";
+import { Input, Modal, Space } from "antd";
 import React, { useState } from "react";
 import type { CountEditModalProps } from "./type";
 import { validateInitInput } from "../../utils/inputNormalize";
+import useSafeMessage from "../../hooks/useSafeMessage";
 
 // #region 常量与组件
 const
@@ -25,7 +26,7 @@ const
     // #region 解构属性、编辑状态与保存
     const
       { count, onCancel, onOk, open } = props,
-      { message } = App.useApp(),
+      message = useSafeMessage(),
       [editedCount, setEditedCount] = useState(count),
       /** 保存：数量必须是非空有效数字 */
       handleOk = (): void => {

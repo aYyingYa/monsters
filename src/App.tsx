@@ -1,104 +1,38 @@
-import { App as AntdApp, Divider, Form } from "antd";
-import { FormItems, MonsterCountSummary } from "./components";
-import React from "react";
+import { GUAJIDI_PATH, HOME_PATH, resolveRoutePath, useHashPath } from "./router/hashRouter";
+import BottomNav from "./components/BottomNav";
+import GuajidiPage from "./pages/GuajidiPage";
+import HomePage from "./pages/HomePage";
+import React, { useEffect } from "react";
 import styles from "./App.module.less";
-import DateFileSelect from "./components/DateFileSelect";
-import MonsterEditModal from "./components/MonsterEditModal";
-import MonsterTable from "./components/MonsterTable";
-import useMonsterPage from "./hooks/useMonsterPage";
 
 // #region 应用主组件
 /**
- * 应用主组件
- * @returns 页面根组件
+ * 应用主组件：hash 路由 + 底部导航布局
+ * @returns 应用根组件
  */
 const App: React.FC = () => {
-  // #region 获取页面数据
-  const {
-    activeDate,
-    availableDates,
-    defaultMonsterCount,
-    editMonster,
-    editModalOpen,
-    elapsedMs,
-    eliteMonsterCount,
-    form,
-    mode,
-    monsters,
-    nameMonsterMap,
-    sortInfo,
-    onCancelEdit,
-    onCancelRecord,
-    onConfirmRecord,
-    onDeleteMonster,
-    onEditMonster,
-    onInsertNoTimeRecord,
-    onPauseTimer,
-    onRemoveCount,
-    onRemoveRecord,
-    onResumeTimer,
-    onSelectDate,
-    onStartTimer,
-    onSubmitEdit,
-    onTableChange,
-    onUpdateCount,
-    onUpdateRecord,
-  } = useMonsterPage();
+  // #region 路由解析与默认重定向
+  const
+    rawPath = useHashPath(),
+    path = resolveRoutePath(rawPath);
+
+  // 根路径重定向到首页（替换 hash 触发重渲染）
+  useEffect(() => {
+    if (path !== rawPath) {
+      window.location.replace(`#${path}`);
+    }
+  }, [path, rawPath]);
   // #endregion
 
   // #region 渲染
   return (
-    <AntdApp style={{ height: "100%" }}>
-      <div className={styles.home}>
-        <MonsterCountSummary
-          defaultMonsterCount={defaultMonsterCount}
-          eliteMonsterCount={eliteMonsterCount}
-          form={form}
-          monsters={monsters}
-        />
-        <Form form={form} layout="vertical">
-          <FormItems
-            elapsedMs={elapsedMs}
-            mode={mode}
-            nameMonsterMap={nameMonsterMap}
-            onCancelRecord={onCancelRecord}
-            onConfirmRecord={onConfirmRecord}
-            onInsertNoTimeRecord={onInsertNoTimeRecord}
-            onPauseTimer={onPauseTimer}
-            onRemoveCount={onRemoveCount}
-            onRemoveRecord={onRemoveRecord}
-            onResumeTimer={onResumeTimer}
-            onStartTimer={onStartTimer}
-            onUpdateCount={onUpdateCount}
-            onUpdateRecord={onUpdateRecord}
-          />
-        </Form>
-        <Divider size="middle" />
-        <DateFileSelect
-          activeDate={activeDate}
-          availableDates={availableDates}
-          onSelect={onSelectDate}
-        />
-        <MonsterTable
-          monsters={monsters}
-          onDelete={onDeleteMonster}
-          onEdit={onEditMonster}
-          onTableChange={onTableChange}
-          sortInfo={sortInfo}
-        />
-        <MonsterEditModal
-          initialValues={editMonster}
-          nameMonsterMap={nameMonsterMap}
-          onCancel={onCancelEdit}
-          onOk={onSubmitEdit}
-          onRemoveCount={onRemoveCount}
-          onRemoveRecord={onRemoveRecord}
-          onUpdateCount={onUpdateCount}
-          onUpdateRecord={onUpdateRecord}
-          open={editModalOpen}
-        />
-      </div>
-    </AntdApp>
+    <div className={styles.layout}>
+      <main className={styles.content}>
+        {path === HOME_PATH && <HomePage />}
+        {path === GUAJIDI_PATH && <GuajidiPage />}
+      </main>
+      <BottomNav activePath={path} />
+    </div>
   );
   // #endregion
 };

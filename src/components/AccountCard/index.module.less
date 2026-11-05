@@ -1,0 +1,77 @@
+.accountCard {
+  width: 100%;
+  max-width: 300px;
+
+  .uidRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .uidText {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #863bff;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .infoGrid {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .infoMain {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .infoExtra {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 12px;
+    border-left: 1px solid #434343;
+    flex-shrink: 0;
+    max-width: 40%;
+  }
+
+  .extraText {
+    color: #d9d9d9;
+    font-size: 13px;
+    margin: 0;
+    overflow-wrap: anywhere;
+    user-select: none;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .fieldRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  .fieldLabel {
+    color: #8c8c8c;
+    flex-shrink: 0;
+  }
+
+  .fieldValue {
+    color: #d9d9d9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .accountText {
+    color: #d9d9d9;
+    cursor: pointer;
+    user-select: none;
+  }
+}

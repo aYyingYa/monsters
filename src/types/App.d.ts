@@ -35,6 +35,62 @@ export interface Monster {
 }
 
 /**
+ * 呱唧地账号记录
+ */
+export interface AccountRecord {
+  /**
+   * 记录id
+   */
+  id: string;
+  /**
+   * 游戏uid（9位数字）
+   */
+  uid: string;
+  /**
+   * 账号名
+   */
+  accountName: string;
+  /**
+   * 账号（手机号或邮箱，展示时需脱敏）
+   */
+  account: string;
+  /**
+   * 密码
+   */
+  password: string;
+  /**
+   * 额外信息（选填）
+   */
+  extraInfo?: string;
+}
+
+/**
+ * 呱唧地账号表单数据
+ */
+export interface AccountFormValues {
+  /**
+   * 游戏uid（9位数字）
+   */
+  uid: string;
+  /**
+   * 账号名
+   */
+  accountName: string;
+  /**
+   * 账号（手机号或邮箱）
+   */
+  account: string;
+  /**
+   * 密码
+   */
+  password: string;
+  /**
+   * 额外信息（选填）
+   */
+  extraInfo?: string;
+}
+
+/**
  * 表单数据接口
  */
 export interface FormValues {

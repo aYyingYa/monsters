@@ -5,6 +5,24 @@ export type MonsterType = "小怪" | "精英怪";
 
 // #region 常量
 export const
+  /** 账号卡片复制账号+密码成功提示 */
+  ACCOUNT_CARD_COPY_CREDENTIAL_SUCCESS_MESSAGE = "已复制 账号 + 密码",
+  /** 账号卡片复制账号+密码失败提示 */
+  ACCOUNT_CARD_COPY_CREDENTIAL_FAILURE_MESSAGE = "复制失败，请手动复制",
+  /** 账号卡片复制uid+账号名失败提示 */
+  ACCOUNT_CARD_COPY_ACCOUNT_FAILURE_MESSAGE = "复制失败，请手动复制",
+  /** 账号卡片复制uid+账号名成功提示 */
+  ACCOUNT_CARD_COPY_ACCOUNT_SUCCESS_MESSAGE = "已复制 uid + 账号名",
+  /** 账号卡片复制uid失败提示 */
+  ACCOUNT_CARD_COPY_UID_FAILURE_MESSAGE = "复制失败，请手动复制",
+  /** 账号卡片复制uid成功提示 */
+  ACCOUNT_CARD_COPY_UID_SUCCESS_MESSAGE = "已复制 uid",
+  /** 账号卡片uid悬浮提示 */
+  ACCOUNT_CARD_UID_TOOLTIP = "点击复制 uid",
+  /** 账号卡片复制按钮悬浮提示 */
+  ACCOUNT_CARD_COPY_BUTTON_TOOLTIP = "复制 uid + 账号名",
+  /** 账号卡片脱敏账号悬浮提示 */
+  ACCOUNT_CARD_ACCOUNT_TOOLTIP = "点击复制 账号 + 密码",
   /** 操作按钮标签 */
   ACTION_LABEL = "操作",
   /** 统计卡片与表单间距（像素） */
@@ -49,6 +67,16 @@ export const
   FORM_DEFAULT_MONSTER_NAME = "月铁",
   /** 表单默认怪物类型 */
   FORM_DEFAULT_MONSTER_TYPE = "精英怪",
+  /** 呱唧地新增按钮文案 */
+  GUAJIDI_ADD_BUTTON_TEXT = "新增账号",
+  /** 呱唧地新增成功提示 */
+  GUAJIDI_ADD_SUCCESS_MESSAGE = "新增成功",
+  /** 呱唧地空列表提示 */
+  GUAJIDI_EMPTY_DESCRIPTION = "暂无账号，点击右上角新增",
+  /** 呱唧地uid重复提示 */
+  GUAJIDI_DUPLICATE_UID_MESSAGE = "uid 已存在，请更换",
+  /** 呱唧地页面标题 */
+  GUAJIDI_PAGE_TITLE = "呱唧地",
   /** 是否在本世界字段默认值为否 */
   IS_IN_CURRENT_WORLD_DEFAULT = false,
   /** 是否在本世界字段标签 */
@@ -148,6 +176,8 @@ export const
   NO_TIME_RECORD_OK_TEXT = "确认",
   /** 不计用时记录成功提示 */
   NO_TIME_RECORD_SUCCESS_MESSAGE = "不计用时记录成功",
+  /** Uid输入最大长度（9位数字） */
+  UID_INPUT_MAX_LENGTH = 9,
   /** 零值常量 */
   ZERO = 0;
 // #endregion

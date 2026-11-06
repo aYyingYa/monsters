@@ -6,7 +6,8 @@ import { REQUIRED_RULE } from "../../utils/inputRules";
 import type { FormValues } from "../../types/App";
 import ContextMenu from "../ContextMenu";
 import { NameEditModal } from "../HistoryEditModal";
-import { resolveDefaultCount } from "../../utils/formDefaults";
+import { resolveDefaultCount, resolveDefaultName } from "../../utils/formDefaults";
+import styles from "./index.module.less";
 import useSafeMessage from "../../hooks/useSafeMessage";
 
 // #region 类型定义
@@ -63,6 +64,8 @@ interface MenuState {
 
 // #region 组件
 const
+  /** 级联默认数量 toast 前缀 */
+  CASCADE_COUNT_MESSAGE_PREFIX = "已切换为默认数量：",
   /** 设为默认值成功提示 */
   SET_DEFAULT_NAME_MESSAGE = "已设为该类型默认名称",
   /**
@@ -87,19 +90,25 @@ const
       // 重名校验需排除当前编辑的名称自身
       existingNames = Object.keys(nameMonsterMap).filter((name) => name !== editingName),
       /**
-       * 选中历史名称时回填其绑定类型，数量级联切换到该名称默认数量
+       * 选中历史名称时回填其绑定类型，数量级联切换到该名称默认数量；
+       * 数量被默认值回填时 toast 提示
        * @param name 选中的名称
        */
       handleNameSelect = (name: string): void => {
-        const record = nameMonsterMap[name];
+        const
+          record = nameMonsterMap[name],
+          nextCount = resolveDefaultCount(name, formDefaults.countByName);
         // 无绑定记录时不回填，保留用户当前输入
         if (typeof record === "undefined") {
           return;
         }
         form.setFieldsValue({
-          count: resolveDefaultCount(name, formDefaults.countByName),
+          count: nextCount,
           type: record.type,
         });
+        if (nextCount !== "") {
+          message.success(`${CASCADE_COUNT_MESSAGE_PREFIX}${nextCount}`);
+        }
       },
       /** 关闭右键菜单 */
       closeMenu = useCallback((): void => {
@@ -121,8 +130,9 @@ const
         if (menuState === null || typeof currentType === "undefined") {
           return;
         }
-        onSetDefaultName(currentType, menuState.name).then(() => {
-          message.success(SET_DEFAULT_NAME_MESSAGE);
+        message.success(SET_DEFAULT_NAME_MESSAGE);
+        onSetDefaultName(currentType, menuState.name).catch((): void => {
+          // 持久化失败时默认值仅本次会话生效
         });
         setMenuState(null);
       },
@@ -178,14 +188,27 @@ const
           <AutoComplete
             allowClear
             onSelect={handleNameSelect}
-            optionRender={(option) => (
-              <div
-                data-context-option
-                onContextMenu={(event) => handleOptionContextMenu(event, String(option.value ?? ""))}
-              >
-                {option.label}
-              </div>
-            )}
+            optionRender={(option) => {
+              const optionName = String(option.value ?? ""),
+               isDefaultOption =
+                optionName !== "" &&
+                typeof currentType !== "undefined" &&
+                optionName === resolveDefaultName(currentType, formDefaults.nameByType, nameMonsterMap);
+              let defaultBadge: React.ReactNode = null;
+              if (isDefaultOption) {
+                defaultBadge = <span className={styles.defaultBadge}>默认</span>;
+              }
+              return (
+                <div
+                  className={styles.optionRow}
+                  data-context-option
+                  onContextMenu={(event) => handleOptionContextMenu(event, optionName)}
+                >
+                  <span data-option-label>{option.label}</span>
+                  {defaultBadge}
+                </div>
+              );
+            }}
             options={nameOptions}
           />
         </Form.Item>

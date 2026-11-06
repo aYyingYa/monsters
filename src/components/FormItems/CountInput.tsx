@@ -7,6 +7,8 @@ import type { FormValues } from "../../types/App";
 import ContextMenu from "../ContextMenu";
 import { CountEditModal } from "../HistoryEditModal";
 import { validateInitInput } from "../../utils/inputNormalize";
+import { resolveDefaultCount } from "../../utils/formDefaults";
+import styles from "./index.module.less";
 import useSafeMessage from "../../hooks/useSafeMessage";
 
 // #region 类型定义
@@ -94,12 +96,14 @@ const
   CountInput: React.FC<CountInputProps> = (props) => {
     // #region 解构属性、表单监听、状态与动作
     const
-      { nameMonsterMap, onRemoveCount, onSetDefaultCount, onUpdateCount } = props,
+      { formDefaults, nameMonsterMap, onRemoveCount, onSetDefaultCount, onUpdateCount } = props,
       form = Form.useFormInstance<FormValues>(),
       message = useSafeMessage(),
       watchedName = Form.useWatch("name", form),
       // 首帧 useWatch 字段可能未注册，兜底读取表单当前值
       currentName: string = watchedName ?? form.getFieldValue("name") ?? "",
+      // 该名称的默认数量（数量选项标记用）
+      defaultCountOfName = resolveDefaultCount(currentName, formDefaults.countByName),
       [menuState, setMenuState] = useState<MenuState | null>(null),
       [editingCount, setEditingCount] = useState<string | null>(null),
       countOptions = toDisplayCounts(nameMonsterMap[currentName]?.counts ?? []).map((count) => ({ label: count, value: count })),
@@ -123,8 +127,9 @@ const
         if (menuState === null || currentName === "") {
           return;
         }
-        onSetDefaultCount(currentName, menuState.count).then(() => {
-          message.success(SET_DEFAULT_COUNT_MESSAGE);
+        message.success(SET_DEFAULT_COUNT_MESSAGE);
+        onSetDefaultCount(currentName, menuState.count).catch((): void => {
+          // 持久化失败时默认值仅本次会话生效
         });
         setMenuState(null);
       },
@@ -173,14 +178,24 @@ const
           <AutoComplete
             allowClear
             filterOption={false}
-            optionRender={(option) => (
-              <div
-                data-context-option
-                onContextMenu={(event) => handleOptionContextMenu(event, String(option.value ?? ""))}
-              >
-                {option.label}
-              </div>
-            )}
+            optionRender={(option) => {
+              const optionCount = String(option.value ?? ""),
+               isDefaultOption = optionCount !== "" && optionCount === defaultCountOfName;
+              let defaultBadge: React.ReactNode = null;
+              if (isDefaultOption) {
+                defaultBadge = <span className={styles.defaultBadge}>默认</span>;
+              }
+              return (
+                <div
+                  className={styles.optionRow}
+                  data-context-option
+                  onContextMenu={(event) => handleOptionContextMenu(event, optionCount)}
+                >
+                  <span data-option-label>{option.label}</span>
+                  {defaultBadge}
+                </div>
+              );
+            }}
             options={countOptions}
           />
         </Form.Item>

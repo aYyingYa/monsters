@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { Form } from "antd";
+import { App as AntdApp, Form } from "antd";
 import FormItems from "./index";
 import type { FormItemsProps } from "./type";
 import type { NameMonsterMap } from "../../services/monsterHistoryService";
@@ -99,7 +99,10 @@ const
    * @param text 选项文本
    */
   clickOption = (label: string, text: string): void => {
-    const option = getOptionContents(label).find((element) => element.textContent === text);
+    const option = getOptionContents(label).find((element) => {
+      const labelNode = element.querySelector("[data-option-label]");
+      return (labelNode?.textContent ?? element.textContent) === text;
+    });
     if (typeof option === "undefined") {
       throw new Error(`下拉选项不存在：${text}`);
     }
@@ -111,7 +114,10 @@ const
    * @param text 选项文本
    */
   rightClickOption = (label: string, text: string): void => {
-    const option = getOptionContents(label).find((element) => element.textContent === text);
+    const option = getOptionContents(label).find((element) => {
+      const labelNode = element.querySelector("[data-option-label]");
+      return (labelNode?.textContent ?? element.textContent) === text;
+    });
     if (typeof option === "undefined") {
       throw new Error(`下拉选项不存在：${text}`);
     }
@@ -161,7 +167,13 @@ const
       onUpdateRecord: asyncNoop,
       ...overrides,
     };
-    return render(createElement(Form, null, createElement(FormItems, formItemsProps)));
+    return render(
+      createElement(
+        AntdApp,
+        null,
+        createElement(Form, null, createElement(FormItems, formItemsProps)),
+      ),
+    );
   },
   /**
    * 以 PC 视口宽度渲染 FormItems 测试组件

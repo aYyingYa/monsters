@@ -1,4 +1,4 @@
-import { App as AntdApp, Divider, Form } from "antd";
+import { Divider, Form } from "antd";
 import { FormItems, MonsterCountSummary } from "../components";
 import React from "react";
 import DateFileSelect from "../components/DateFileSelect";
@@ -51,9 +51,8 @@ const HomePage: React.FC = () => {
 
   // #region 渲染
   return (
-    <AntdApp style={{ height: "100%" }}>
-      <div className={styles.home}>
-        <MonsterCountSummary
+    <div className={styles.home}>
+      <MonsterCountSummary
           defaultMonsterCount={defaultMonsterCount}
           eliteMonsterCount={eliteMonsterCount}
           form={form}
@@ -106,8 +105,7 @@ const HomePage: React.FC = () => {
           onUpdateRecord={onUpdateRecord}
           open={editModalOpen}
         />
-      </div>
-    </AntdApp>
+    </div>
   );
   // #endregion
 };

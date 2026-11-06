@@ -19,6 +19,10 @@ export interface ContextMenuProps {
    */
   onEdit: () => void;
   /**
+   * 设为默认值回调（不传则不展示该菜单项）
+   */
+  onSetDefault?: () => void;
+  /**
    * 菜单是否打开
    */
   open: boolean;

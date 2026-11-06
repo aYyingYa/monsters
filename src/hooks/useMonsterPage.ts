@@ -3,6 +3,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
   EDIT_SUCCESS_MESSAGE,
   ELITE_MONSTER_TYPE,
+  type MonsterType,
   NO_TIME_RECORD_SUCCESS_MESSAGE,
   SELECT_DATE_MESSAGE_PREFIX,
   STATE_VALUE_INDEX,
@@ -17,8 +18,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Form, type TableProps } from "antd";
 import type { SortOrder } from "antd/es/table/interface";
 import type { FormInstance } from "antd/es/form";
-import type { NameMonsterMap } from "../services/monsterHistoryService";
+import type { FormDefaults, NameMonsterMap } from "../services/monsterHistoryService";
 import { reduceMonsterCount } from "../utils/calc";
+import { resolveDefaultCount, resolveDefaultName } from "../utils/formDefaults";
 import useMonsterHistory from "./useMonsterHistory";
 import useMonsterStorage from "./useMonsterStorage";
 import useMonsterTimer from "./useMonsterTimer";
@@ -35,6 +37,7 @@ interface UseMonsterPageResult {
   elapsedMs: number;
   eliteMonsterCount: number;
   form: FormInstance<FormValues>;
+  formDefaults: FormDefaults;
   mode: "idle" | "paused" | "running";
   monsters: Monster[];
   nameMonsterMap: NameMonsterMap;
@@ -50,6 +53,8 @@ interface UseMonsterPageResult {
   onRemoveRecord: (name: string) => Promise<void>;
   onResumeTimer: () => void;
   onSelectDate: (date: string) => Promise<void>;
+  onSetDefaultCount: (name: string, count: string) => Promise<void>;
+  onSetDefaultName: (type: MonsterType, name: string) => Promise<void>;
   onStartTimer: () => void;
   onTableChange: TableProps<Monster>["onChange"];
   onSubmitEdit: (values: FormValues) => Promise<void>;
@@ -72,6 +77,8 @@ const useMonsterPage = (): UseMonsterPageResult => {
     [sortInfo, setSortInfo] = useState<{ columnKey: string; order: SortOrder } | null>(null),
     monstersRef = useRef(monsterStorage.monsters),
     saveMonstersRef = useRef(monsterStorage.saveMonsters),
+    // 初始化级联只执行一次，历史加载完成后立即按级联默认值回填名称与数量
+    formCascadeInitializedRef = useRef(false),
     handleCancelEdit = (): void => {
       setEditModalOpen(false);
       setEditMonster(null);
@@ -190,6 +197,26 @@ const useMonsterPage = (): UseMonsterPageResult => {
     monstersRef.current = monsterStorage.monsters;
     saveMonstersRef.current = monsterStorage.saveMonsters;
   }, [monsterStorage.monsters, monsterStorage.saveMonsters]);
+
+  // #region 初始化级联：历史加载完成后按级联默认值回填名称与数量（仅执行一次）
+  useEffect(() => {
+    if (monsterHistory.historyLoading || formCascadeInitializedRef.current) {
+      return;
+    }
+    formCascadeInitializedRef.current = true;
+    const
+      currentType: MonsterType = form.getFieldValue("type") ?? DEFAULT_MONSTER_TYPE,
+      nextName = resolveDefaultName(
+        currentType,
+        monsterHistory.formDefaults.nameByType,
+        monsterHistory.nameMonsterMap,
+      );
+    form.setFieldsValue({
+      count: resolveDefaultCount(nextName, monsterHistory.formDefaults.countByName),
+      name: nextName,
+    });
+  }, [form, monsterHistory.historyLoading, monsterHistory.formDefaults, monsterHistory.nameMonsterMap]);
+  // #endregion
   // #endregion
 
   return {
@@ -201,6 +228,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
     elapsedMs: monsterTimer.elapsedMs,
     eliteMonsterCount: reduceMonsterCount(monsterStorage.monsters, ELITE_MONSTER_TYPE),
     form,
+    formDefaults: monsterHistory.formDefaults,
     mode: monsterTimer.mode,
     monsters: monsterStorage.monsters,
     nameMonsterMap: monsterHistory.nameMonsterMap,
@@ -215,6 +243,8 @@ const useMonsterPage = (): UseMonsterPageResult => {
     onRemoveRecord: monsterHistory.removeMonsterRecord,
     onResumeTimer: handleResumeTimer,
     onSelectDate: handleSelectDate,
+    onSetDefaultCount: monsterHistory.setDefaultCount,
+    onSetDefaultName: monsterHistory.setDefaultName,
     onStartTimer: handleStartTimer,
     onSubmitEdit: handleSubmitEdit,
     onTableChange: handleTableChange,

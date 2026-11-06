@@ -23,6 +23,7 @@ const HomePage: React.FC = () => {
     elapsedMs,
     eliteMonsterCount,
     form,
+    formDefaults,
     mode,
     monsters,
     nameMonsterMap,
@@ -38,6 +39,8 @@ const HomePage: React.FC = () => {
     onRemoveRecord,
     onResumeTimer,
     onSelectDate,
+    onSetDefaultCount,
+    onSetDefaultName,
     onStartTimer,
     onSubmitEdit,
     onTableChange,
@@ -59,6 +62,7 @@ const HomePage: React.FC = () => {
         <Form form={form} layout="vertical">
           <FormItems
             elapsedMs={elapsedMs}
+            formDefaults={formDefaults}
             mode={mode}
             nameMonsterMap={nameMonsterMap}
             onCancelRecord={onCancelRecord}
@@ -68,6 +72,8 @@ const HomePage: React.FC = () => {
             onRemoveCount={onRemoveCount}
             onRemoveRecord={onRemoveRecord}
             onResumeTimer={onResumeTimer}
+            onSetDefaultCount={onSetDefaultCount}
+            onSetDefaultName={onSetDefaultName}
             onStartTimer={onStartTimer}
             onUpdateCount={onUpdateCount}
             onUpdateRecord={onUpdateRecord}
@@ -87,12 +93,15 @@ const HomePage: React.FC = () => {
           sortInfo={sortInfo}
         />
         <MonsterEditModal
+          formDefaults={formDefaults}
           initialValues={editMonster}
           nameMonsterMap={nameMonsterMap}
           onCancel={onCancelEdit}
           onOk={onSubmitEdit}
           onRemoveCount={onRemoveCount}
           onRemoveRecord={onRemoveRecord}
+          onSetDefaultCount={onSetDefaultCount}
+          onSetDefaultName={onSetDefaultName}
           onUpdateCount={onUpdateCount}
           onUpdateRecord={onUpdateRecord}
           open={editModalOpen}

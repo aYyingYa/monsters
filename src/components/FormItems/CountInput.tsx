@@ -1,18 +1,23 @@
+import type { FormDefaults, NameMonsterMap } from "../../services/monsterHistoryService";
 import { AutoComplete, Form } from "antd";
-import { FORM_DEFAULT_MONSTER_COUNT, MONSTER_COUNT_LABEL, ZERO } from "../../configs";
+import { MONSTER_COUNT_LABEL, ZERO } from "../../configs";
 import { NUMBER_RULES, REQUIRED_RULE } from "../../utils/inputRules";
 import React, { useCallback, useState } from "react";
 import type { FormValues } from "../../types/App";
-import type { NameMonsterMap } from "../../services/monsterHistoryService";
 import ContextMenu from "../ContextMenu";
 import { CountEditModal } from "../HistoryEditModal";
 import { validateInitInput } from "../../utils/inputNormalize";
+import useSafeMessage from "../../hooks/useSafeMessage";
 
 // #region 类型定义
 /**
  * 怪物数量输入组件属性
  */
 interface CountInputProps {
+  /**
+   * 表单级联默认值配置
+   */
+  formDefaults: FormDefaults;
   /**
    * 名称到怪物属性的映射
    */
@@ -23,6 +28,12 @@ interface CountInputProps {
    * @param count 待删除的数量
    */
   onRemoveCount: (name: string, count: string) => Promise<void>;
+  /**
+   * 设为指定名称的默认数量回调
+   * @param name 怪物名称
+   * @param count 默认怪物数量
+   */
+  onSetDefaultCount: (name: string, count: string) => Promise<void>;
   /**
    * 更新数量项回调
    * @param name 怪物名称
@@ -53,6 +64,8 @@ interface MenuState {
 
 // #region 纯函数工具与组件
 const
+  /** 设为默认值成功提示 */
+  SET_DEFAULT_COUNT_MESSAGE = "已设为该名称默认数量",
   /**
    * 数量数值升序比较器（数量入库前已经数值校验，直接转 Number 比较）
    * @param prev 前一个数量
@@ -74,15 +87,16 @@ const
     return [latestCount, ...restCounts.sort(compareCountBySize)];
   },
   /**
-   * 怪物数量输入框（选项为当前名称的历史数量，支持右键编辑/删除历史选项）
+   * 怪物数量输入框（选项为当前名称的历史数量，支持右键编辑/删除/设为默认历史选项）
    * @param props 组件属性
    * @returns 数量输入控件
    */
   CountInput: React.FC<CountInputProps> = (props) => {
     // #region 解构属性、表单监听、状态与动作
     const
-      { nameMonsterMap, onRemoveCount, onUpdateCount } = props,
+      { nameMonsterMap, onRemoveCount, onSetDefaultCount, onUpdateCount } = props,
       form = Form.useFormInstance<FormValues>(),
+      message = useSafeMessage(),
       watchedName = Form.useWatch("name", form),
       // 首帧 useWatch 字段可能未注册，兜底读取表单当前值
       currentName: string = watchedName ?? form.getFieldValue("name") ?? "",
@@ -103,6 +117,16 @@ const
       handleOptionContextMenu = (event: React.MouseEvent, count: string): void => {
         event.preventDefault();
         setMenuState({ clientX: event.clientX, clientY: event.clientY, count });
+      },
+      /** 菜单设为默认：将该数量绑定为当前名称的默认数量 */
+      handleMenuSetDefault = (): void => {
+        if (menuState === null || currentName === "") {
+          return;
+        }
+        onSetDefaultCount(currentName, menuState.count).then(() => {
+          message.success(SET_DEFAULT_COUNT_MESSAGE);
+        });
+        setMenuState(null);
       },
       /** 菜单编辑：打开数量编辑弹窗 */
       handleMenuEdit = (): void => {
@@ -141,7 +165,6 @@ const
     return (
       <>
         <Form.Item
-          initialValue={FORM_DEFAULT_MONSTER_COUNT}
           label={MONSTER_COUNT_LABEL}
           name="count"
           normalize={(value: string) => validateInitInput(value, "NON_NEGATIVE")}
@@ -166,6 +189,7 @@ const
           onClose={closeMenu}
           onDelete={handleMenuDelete}
           onEdit={handleMenuEdit}
+          onSetDefault={handleMenuSetDefault}
           open={menuState !== null}
           top={menuState?.clientY ?? ZERO}
         />

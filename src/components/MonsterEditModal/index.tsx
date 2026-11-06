@@ -16,12 +16,15 @@ const MonsterEditModal: React.FC<MonsterEditModalProps> = (props) => {
   // #region 属性、表单与提交
   const
     {
+      formDefaults,
       initialValues,
       nameMonsterMap,
       onCancel,
       onOk,
       onRemoveCount,
       onRemoveRecord,
+      onSetDefaultCount,
+      onSetDefaultName,
       onUpdateCount,
       onUpdateRecord,
       open,
@@ -65,15 +68,19 @@ const MonsterEditModal: React.FC<MonsterEditModalProps> = (props) => {
       title="编辑怪物记录"
     >
       <Form form={form} layout="vertical">
-        <TypeSelect />
+        <TypeSelect formDefaults={formDefaults} nameMonsterMap={nameMonsterMap} />
         <NameInput
+          formDefaults={formDefaults}
           nameMonsterMap={nameMonsterMap}
           onRemoveRecord={onRemoveRecord}
+          onSetDefaultName={onSetDefaultName}
           onUpdateRecord={onUpdateRecord}
         />
         <CountInput
+          formDefaults={formDefaults}
           nameMonsterMap={nameMonsterMap}
           onRemoveCount={onRemoveCount}
+          onSetDefaultCount={onSetDefaultCount}
           onUpdateCount={onUpdateCount}
         />
         <IsInCurrentWorldSwitch />

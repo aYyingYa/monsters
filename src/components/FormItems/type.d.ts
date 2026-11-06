@@ -1,4 +1,5 @@
-import type { NameMonsterMap } from "../../services/monsterHistoryService";
+import type { FormDefaults, NameMonsterMap } from "../../services/monsterHistoryService";
+import type { MonsterType } from "../../configs";
 
 /**
  * 组件FormItems的属性
@@ -8,6 +9,10 @@ export interface FormItemsProps {
    * 已运行的毫秒数
    */
   elapsedMs: number;
+  /**
+   * 表单级联默认值配置
+   */
+  formDefaults: FormDefaults;
   /**
    * 计时器运行模式
    */
@@ -47,6 +52,18 @@ export interface FormItemsProps {
    * 继续计时回调
    */
   onResumeTimer: () => void;
+  /**
+   * 设为指定类型的默认名称回调
+   * @param type 怪物类型
+   * @param name 默认怪物名称
+   */
+  onSetDefaultName: (type: MonsterType, name: string) => Promise<void>;
+  /**
+   * 设为指定名称的默认数量回调
+   * @param name 怪物名称
+   * @param count 默认怪物数量
+   */
+  onSetDefaultCount: (name: string, count: string) => Promise<void>;
   /**
    * 开始计时回调
    */

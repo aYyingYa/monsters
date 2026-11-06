@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import type { MonsterType } from "../configs";
 import {
+  type FormDefaults,
   type MonsterHistoryRecord,
   type NameMonsterMap,
+  loadFormDefaults,
   loadNameMonsterMap,
+  saveFormDefaults,
   saveNameMonsterMap,
 } from "../services/monsterHistoryService";
 
@@ -12,6 +15,14 @@ import {
  * 怪物历史 Hook 返回结果
  */
 interface UseMonsterHistoryResult {
+  /**
+   * 表单级联默认值配置
+   */
+  formDefaults: FormDefaults;
+  /**
+   * 历史记录是否正在初始化加载
+   */
+  historyLoading: boolean;
   /**
    * 名称到怪物属性的映射
    */
@@ -23,6 +34,18 @@ interface UseMonsterHistoryResult {
    * @param count 怪物数量
    */
   saveMonsterHistory: (name: string, type: MonsterType, count: string) => Promise<void>;
+  /**
+   * 设置指定类型的默认怪物名称
+   * @param type 怪物类型
+   * @param name 默认怪物名称
+   */
+  setDefaultName: (type: MonsterType, name: string) => Promise<void>;
+  /**
+   * 设置指定名称的默认怪物数量
+   * @param name 怪物名称
+   * @param count 默认怪物数量
+   */
+  setDefaultCount: (name: string, count: string) => Promise<void>;
   /**
    * 更新名称记录（支持改名与数量列表整体替换，类型沿用原记录）
    * @param oldName 原名称
@@ -98,6 +121,8 @@ const
     // #region 状态与保存
     const
       [nameMonsterMap, setNameMonsterMap] = useState<NameMonsterMap>({}),
+      [formDefaults, setFormDefaults] = useState<FormDefaults>({ countByName: {}, nameByType: {} }),
+      [historyLoading, setHistoryLoading] = useState(true),
       /**
        * 应用映射变更：更新状态并持久化
        * @param nextMap 新的名称怪物映射
@@ -105,6 +130,14 @@ const
       applyNextMap = async (nextMap: NameMonsterMap): Promise<void> => {
         setNameMonsterMap(nextMap);
         await saveNameMonsterMap(nextMap);
+      },
+      /**
+       * 应用级联默认值变更：更新状态并持久化
+       * @param nextDefaults 新的级联默认值配置
+       */
+      applyNextDefaults = async (nextDefaults: FormDefaults): Promise<void> => {
+        setFormDefaults(nextDefaults);
+        await saveFormDefaults(nextDefaults);
       },
       /**
        * 保存名称与怪物属性的绑定关系（名称按最近使用置顶）
@@ -117,6 +150,28 @@ const
         await applyNextMap({
           [name]: { counts: mergeCounts(nameMonsterMap[name], count), type },
           ...omitRecord(nameMonsterMap, name),
+        });
+      },
+      /**
+       * 设置指定类型的默认怪物名称
+       * @param type 怪物类型
+       * @param name 默认怪物名称
+       */
+      setDefaultName = async (type: MonsterType, name: string): Promise<void> => {
+        await applyNextDefaults({
+          ...formDefaults,
+          nameByType: { ...formDefaults.nameByType, [type]: name },
+        });
+      },
+      /**
+       * 设置指定名称的默认怪物数量
+       * @param name 怪物名称
+       * @param count 默认怪物数量
+       */
+      setDefaultCount = async (name: string, count: string): Promise<void> => {
+        await applyNextDefaults({
+          ...formDefaults,
+          countByName: { ...formDefaults.countByName, [name]: count },
         });
       },
       /**
@@ -186,12 +241,17 @@ const
     useEffect(() => {
       let isCancelled = false;
       (async (): Promise<void> => {
-        const loadedMap = await loadNameMonsterMap();
+        const [loadedMap, loadedDefaults] = await Promise.all([loadNameMonsterMap(), loadFormDefaults()]);
         if (!isCancelled) {
           setNameMonsterMap(loadedMap);
+          setFormDefaults(loadedDefaults);
+          setHistoryLoading(false);
         }
-      })().catch(() => {
+      })().catch((): void => {
         // 加载失败时保持空状态，避免页面崩溃
+        if (!isCancelled) {
+          setHistoryLoading(false);
+        }
       });
       return (): void => {
         isCancelled = true;
@@ -200,10 +260,14 @@ const
     // #endregion
 
     return {
+      formDefaults,
+      historyLoading,
       nameMonsterMap,
       removeCount,
       removeMonsterRecord,
       saveMonsterHistory,
+      setDefaultCount,
+      setDefaultName,
       updateCount,
       updateMonsterRecord,
     };

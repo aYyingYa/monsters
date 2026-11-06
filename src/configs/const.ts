@@ -61,11 +61,7 @@ export const
   ELITE_MONSTER_TYPE = "精英怪",
   /** 空名称列表占位文案 */
   EMPTY_NAME_LIST_TEXT = "--",
-  /** 表单默认怪物数量 */
-  FORM_DEFAULT_MONSTER_COUNT = "26",
-  /** 表单默认怪物名称 */
-  FORM_DEFAULT_MONSTER_NAME = "月铁",
-  /** 表单默认怪物类型 */
+  /** 表单默认怪物类型（级联起点，类型自身的初始值） */
   FORM_DEFAULT_MONSTER_TYPE = "精英怪",
   /** 呱唧地新增按钮文案 */
   GUAJIDI_ADD_BUTTON_TEXT = "新增账号",

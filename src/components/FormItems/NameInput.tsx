@@ -1,17 +1,23 @@
+import type { FormDefaults, NameMonsterMap } from "../../services/monsterHistoryService";
 import { AutoComplete, Form } from "antd";
-import { FORM_DEFAULT_MONSTER_NAME, MONSTER_NAME_LABEL, type MonsterType, ZERO } from "../../configs";
+import { MONSTER_NAME_LABEL, type MonsterType, ZERO } from "../../configs";
 import React, { useCallback, useState } from "react";
 import { REQUIRED_RULE } from "../../utils/inputRules";
 import type { FormValues } from "../../types/App";
-import type { NameMonsterMap } from "../../services/monsterHistoryService";
 import ContextMenu from "../ContextMenu";
 import { NameEditModal } from "../HistoryEditModal";
+import { resolveDefaultCount } from "../../utils/formDefaults";
+import useSafeMessage from "../../hooks/useSafeMessage";
 
 // #region 类型定义
 /**
  * 怪物名称输入组件属性
  */
 interface NameInputProps {
+  /**
+   * 表单级联默认值配置
+   */
+  formDefaults: FormDefaults;
   /**
    * 名称到怪物属性的映射
    */
@@ -21,6 +27,12 @@ interface NameInputProps {
    * @param name 怪物名称
    */
   onRemoveRecord: (name: string) => Promise<void>;
+  /**
+   * 设为指定类型的默认名称回调
+   * @param type 怪物类型
+   * @param name 默认怪物名称
+   */
+  onSetDefaultName: (type: MonsterType, name: string) => Promise<void>;
   /**
    * 更新名称记录回调
    * @param oldName 原名称
@@ -51,16 +63,19 @@ interface MenuState {
 
 // #region 组件
 const
+  /** 设为默认值成功提示 */
+  SET_DEFAULT_NAME_MESSAGE = "已设为该类型默认名称",
   /**
-   * 怪物名称输入框（选项按当前怪物类型过滤，支持右键编辑/删除历史选项）
+   * 怪物名称输入框（选项按当前怪物类型过滤，支持右键编辑/删除/设为默认历史选项）
    * @param props 组件属性
    * @returns 名称输入控件
    */
   NameInput: React.FC<NameInputProps> = (props) => {
     // #region 解构属性、表单监听、状态与动作
     const
-      { nameMonsterMap, onRemoveRecord, onUpdateRecord } = props,
+      { formDefaults, nameMonsterMap, onRemoveRecord, onSetDefaultName, onUpdateRecord } = props,
       form = Form.useFormInstance<FormValues>(),
+      message = useSafeMessage(),
       watchedType = Form.useWatch("type", form),
       // 首帧 useWatch 字段可能未注册，兜底读取表单当前值
       currentType: MonsterType | undefined = watchedType ?? form.getFieldValue("type"),
@@ -72,16 +87,19 @@ const
       // 重名校验需排除当前编辑的名称自身
       existingNames = Object.keys(nameMonsterMap).filter((name) => name !== editingName),
       /**
-       * 选中历史名称时回填其绑定类型与最近使用的数量
+       * 选中历史名称时回填其绑定类型，数量级联切换到该名称默认数量
        * @param name 选中的名称
        */
       handleNameSelect = (name: string): void => {
         const record = nameMonsterMap[name];
-        // 无绑定记录或数量历史为空时不回填，保留用户当前输入
-        if (typeof record === "undefined" || record.counts.length === ZERO) {
+        // 无绑定记录时不回填，保留用户当前输入
+        if (typeof record === "undefined") {
           return;
         }
-        form.setFieldsValue({ count: record.counts[ZERO], type: record.type });
+        form.setFieldsValue({
+          count: resolveDefaultCount(name, formDefaults.countByName),
+          type: record.type,
+        });
       },
       /** 关闭右键菜单 */
       closeMenu = useCallback((): void => {
@@ -97,6 +115,16 @@ const
       handleOptionContextMenu = (event: React.MouseEvent, name: string): void => {
         event.preventDefault();
         setMenuState({ clientX: event.clientX, clientY: event.clientY, name });
+      },
+      /** 菜单设为默认：将该名称绑定为当前类型的默认名称 */
+      handleMenuSetDefault = (): void => {
+        if (menuState === null || typeof currentType === "undefined") {
+          return;
+        }
+        onSetDefaultName(currentType, menuState.name).then(() => {
+          message.success(SET_DEFAULT_NAME_MESSAGE);
+        });
+        setMenuState(null);
       },
       /** 菜单编辑：打开名称编辑弹窗 */
       handleMenuEdit = (): void => {
@@ -143,7 +171,6 @@ const
     return (
       <>
         <Form.Item
-          initialValue={FORM_DEFAULT_MONSTER_NAME}
           label={MONSTER_NAME_LABEL}
           name="name"
           rules={REQUIRED_RULE("请输入怪物名称")}
@@ -167,6 +194,7 @@ const
           onClose={closeMenu}
           onDelete={handleMenuDelete}
           onEdit={handleMenuEdit}
+          onSetDefault={handleMenuSetDefault}
           open={menuState !== null}
           top={menuState?.clientY ?? ZERO}
         />

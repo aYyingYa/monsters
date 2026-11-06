@@ -25,6 +25,7 @@ const { useBreakpoint } = Grid,
     // #region 解构属性与断点判断
     const {
         elapsedMs,
+        formDefaults,
         mode,
         nameMonsterMap,
         onCancelRecord,
@@ -34,6 +35,8 @@ const { useBreakpoint } = Grid,
         onRemoveCount,
         onRemoveRecord,
         onResumeTimer,
+        onSetDefaultCount,
+        onSetDefaultName,
         onStartTimer,
         onUpdateCount,
         onUpdateRecord,
@@ -51,19 +54,23 @@ const { useBreakpoint } = Grid,
             <Col span={SPAN_FULL}>
               <Row gutter={[GUTTER_INNER, GUTTER_INNER]}>
                 <Col span={SPAN_THIRD}>
-                  <TypeSelect />
+                  <TypeSelect formDefaults={formDefaults} nameMonsterMap={nameMonsterMap} />
                 </Col>
                 <Col span={SPAN_THIRD}>
                   <NameInput
+                    formDefaults={formDefaults}
                     nameMonsterMap={nameMonsterMap}
                     onRemoveRecord={onRemoveRecord}
+                    onSetDefaultName={onSetDefaultName}
                     onUpdateRecord={onUpdateRecord}
                   />
                 </Col>
                 <Col span={SPAN_THIRD}>
                   <CountInput
+                    formDefaults={formDefaults}
                     nameMonsterMap={nameMonsterMap}
                     onRemoveCount={onRemoveCount}
+                    onSetDefaultCount={onSetDefaultCount}
                     onUpdateCount={onUpdateCount}
                   />
                 </Col>
@@ -108,19 +115,23 @@ const { useBreakpoint } = Grid,
       <>
         <Row align="top" data-testid="form-items-row" gutter={GUTTER_MAIN}>
           <Col span={SPAN_SIXTH}>
-            <TypeSelect />
+            <TypeSelect formDefaults={formDefaults} nameMonsterMap={nameMonsterMap} />
           </Col>
           <Col span={SPAN_SIXTH}>
             <NameInput
+              formDefaults={formDefaults}
               nameMonsterMap={nameMonsterMap}
               onRemoveRecord={onRemoveRecord}
+              onSetDefaultName={onSetDefaultName}
               onUpdateRecord={onUpdateRecord}
             />
           </Col>
           <Col span={SPAN_SIXTH}>
             <CountInput
+              formDefaults={formDefaults}
               nameMonsterMap={nameMonsterMap}
               onRemoveCount={onRemoveCount}
+              onSetDefaultCount={onSetDefaultCount}
               onUpdateCount={onUpdateCount}
             />
           </Col>

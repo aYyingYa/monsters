@@ -74,15 +74,15 @@ describe("FormItems", () => {
     expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue(ELITE_COUNT_OLD);
   });
 
-  it("leaves count empty on name select without default count", async () => {
+  it("falls back to latest count on name select without default count", async () => {
     renderPcFormItems();
     fireEvent.mouseDown(screen.getByLabelText(NAME_FIELD_LABEL));
     await waitFor(() => {
       expect(getOptionTexts(NAME_FIELD_LABEL)).toEqual([ELITE_NAME]);
     });
     clickOption(NAME_FIELD_LABEL, ELITE_NAME);
-    // 默认值与最近使用两套概念：无默认数量时不回填最近使用数量
-    expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue("");
+    // 规则：无 b 默认值时取 a 最近使用值（counts[0]）
+    expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue(ELITE_COUNT_LATEST);
   });
 
   it("shows count options with latest first and the rest ascending", async () => {
@@ -111,15 +111,16 @@ describe("FormItems", () => {
     expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue(NORMAL_COUNT);
   });
 
-  it("resets name and count to empty on type change without defaults", async () => {
+  it("falls back to latest used name and count on type change without defaults", async () => {
     renderPcFormItems();
     fireEvent.mouseDown(screen.getByLabelText(TYPE_FIELD_LABEL));
     await waitFor(() => {
       expect(getOptionTexts(TYPE_FIELD_LABEL).length).toBe(MONSTER_TYPE_OPTION_COUNT);
     });
     clickOption(TYPE_FIELD_LABEL, NORMAL_TYPE);
-    expect(screen.getByLabelText(NAME_FIELD_LABEL)).toHaveValue("");
-    expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue("");
+    // 规则：无 b 默认值时名称取该类型最近使用名称，数量级联取该名称最近使用数量
+    expect(screen.getByLabelText(NAME_FIELD_LABEL)).toHaveValue(NORMAL_NAME);
+    expect(screen.getByLabelText(COUNT_FIELD_LABEL)).toHaveValue(NORMAL_COUNT);
   });
 
   it("shows names of new type after type change", async () => {
@@ -196,7 +197,11 @@ describe("FormItems", () => {
       expect(getOptionTexts(COUNT_FIELD_LABEL)).toEqual([ELITE_COUNT_LATEST, ELITE_COUNT_OLD, ELITE_COUNT_MIDDLE]);
       rightClickOption(COUNT_FIELD_LABEL, ELITE_COUNT_LATEST);
       fireEvent.click(await screen.findByTestId(MENU_EDIT_TEST_ID));
-      fireEvent.change(await screen.findByDisplayValue(ELITE_COUNT_LATEST), { target: { value: NEW_COUNT } });
+      // 数量输入框已回填最近使用数量，需限定弹窗范围定位编辑输入框
+      fireEvent.change(
+        within(await screen.findByRole("dialog")).getByDisplayValue(ELITE_COUNT_LATEST),
+        { target: { value: NEW_COUNT } }
+      );
       fireEvent.click(screen.getByRole("button", { name: OK_BUTTON_TEXT }));
       await waitFor(() => {
         expect(onUpdateCount).toHaveBeenCalledWith(ELITE_NAME, ELITE_COUNT_LATEST, NEW_COUNT);

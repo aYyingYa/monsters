@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Form } from "antd";
+import { App as AntdApp, Form } from "antd";
 import MonsterCountSummary from "./index";
 import { useEffect } from "react";
 
@@ -86,7 +86,12 @@ const PC_WIDTH = 1200,
    * 渲染 MonsterCountSummary 测试组件
    * @returns 渲染结果
    */
-  renderSummary = (): ReturnType<typeof render> => render(<SummaryWrapper />);
+  renderSummary = (): ReturnType<typeof render> =>
+    render(
+      <AntdApp>
+        <SummaryWrapper />
+      </AntdApp>,
+    );
 
 describe("MonsterCountSummary", () => {
   it("renders 2 columns on PC", () => {
@@ -107,7 +112,11 @@ describe("MonsterCountSummary", () => {
 
   it("hides cell text when count is cleared", async () => {
     setViewportWidth(PC_WIDTH);
-    render(<EmptyCountSummaryWrapper />);
+    render(
+      <AntdApp>
+        <EmptyCountSummaryWrapper />
+      </AntdApp>,
+    );
     // 数量被清空后，单车数量区域不应渲染出 0
     await waitFor(() => {
       const zeroCellColumns = Array.from(document.querySelectorAll(CELL_COLUMN_SELECTOR)).filter(
@@ -119,7 +128,11 @@ describe("MonsterCountSummary", () => {
 
   it("hides car text when name is empty", async () => {
     setViewportWidth(PC_WIDTH);
-    render(<EmptyNameSummaryWrapper />);
+    render(
+      <AntdApp>
+        <EmptyNameSummaryWrapper />
+      </AntdApp>,
+    );
     // 未填名称时目标未确定，不应出现任何车数预估文案
     await waitFor(() => {
       expect(screen.queryByText(CAR_TEXT_PATTERN)).not.toBeInTheDocument();

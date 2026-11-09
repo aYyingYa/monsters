@@ -6,7 +6,7 @@ import { REQUIRED_RULE } from "../../utils/inputRules";
 import type { FormValues } from "../../types/App";
 import ContextMenu from "../ContextMenu";
 import { NameEditModal } from "../HistoryEditModal";
-import { resolveDefaultCount, resolveDefaultName } from "../../utils/formDefaults";
+import { resolveCascadeCount, resolveDefaultName } from "../../utils/formDefaults";
 import styles from "./index.module.less";
 import useSafeMessage from "../../hooks/useSafeMessage";
 
@@ -66,6 +66,8 @@ interface MenuState {
 const
   /** 级联默认数量 toast 前缀 */
   CASCADE_COUNT_MESSAGE_PREFIX = "已切换为默认数量：",
+  /** 级联最近使用数量 toast 前缀 */
+  CASCADE_RECENT_COUNT_MESSAGE_PREFIX = "已切换为最近使用数量：",
   /** 设为默认值成功提示 */
   SET_DEFAULT_NAME_MESSAGE = "已设为该类型默认名称",
   /**
@@ -90,24 +92,29 @@ const
       // 重名校验需排除当前编辑的名称自身
       existingNames = Object.keys(nameMonsterMap).filter((name) => name !== editingName),
       /**
-       * 选中历史名称时回填其绑定类型，数量级联切换到该名称默认数量；
-       * 数量被默认值回填时 toast 提示
+       * 选中历史名称时回填其绑定类型，数量级联切换到该名称级联值（优先默认，无默认取最近使用）；
+       * 数量被回填时 toast 提示
        * @param name 选中的名称
        */
       handleNameSelect = (name: string): void => {
         const
           record = nameMonsterMap[name],
-          nextCount = resolveDefaultCount(name, formDefaults.countByName);
+          nextCount = resolveCascadeCount(name, formDefaults.countByName, nameMonsterMap);
         // 无绑定记录时不回填，保留用户当前输入
         if (typeof record === "undefined") {
           return;
         }
         form.setFieldsValue({
-          count: nextCount,
+          count: nextCount.value,
           type: record.type,
         });
-        if (nextCount !== "") {
-          message.success(`${CASCADE_COUNT_MESSAGE_PREFIX}${nextCount}`);
+        if (nextCount.value === "") {
+          return;
+        }
+        if (nextCount.fromDefault) {
+          message.success(`${CASCADE_COUNT_MESSAGE_PREFIX}${nextCount.value}`);
+        } else {
+          message.success(`${CASCADE_RECENT_COUNT_MESSAGE_PREFIX}${nextCount.value}`);
         }
       },
       /** 关闭右键菜单 */

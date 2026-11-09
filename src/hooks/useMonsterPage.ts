@@ -20,7 +20,7 @@ import type { SortOrder } from "antd/es/table/interface";
 import type { FormInstance } from "antd/es/form";
 import type { FormDefaults, NameMonsterMap } from "../services/monsterHistoryService";
 import { reduceMonsterCount } from "../utils/calc";
-import { resolveDefaultCount, resolveDefaultName } from "../utils/formDefaults";
+import { resolveCascadeCount, resolveCascadeName } from "../utils/formDefaults";
 import useMonsterHistory from "./useMonsterHistory";
 import useMonsterStorage from "./useMonsterStorage";
 import useMonsterTimer from "./useMonsterTimer";
@@ -155,8 +155,14 @@ const useMonsterPage = (): UseMonsterPageResult => {
       message.success(`${SELECT_DATE_MESSAGE_PREFIX}${date}`);
     },
     handleStartTimer = (): void => {
-      monsterTimer.startTimer();
-      message.success(TIMER_START_MESSAGE);
+      form.validateFields()
+        .then(() => {
+          monsterTimer.startTimer();
+          message.success(TIMER_START_MESSAGE);
+        })
+        .catch((): void => {
+          // 校验失败时 Ant Design 会自动展示错误提示
+        });
     },
     handleTableChange: NonNullable<TableProps<Monster>["onChange"]> = (_pagination, _filters, sorter): void => {
       if (Array.isArray(sorter)) {
@@ -198,7 +204,7 @@ const useMonsterPage = (): UseMonsterPageResult => {
     saveMonstersRef.current = monsterStorage.saveMonsters;
   }, [monsterStorage.monsters, monsterStorage.saveMonsters]);
 
-  // #region 初始化级联：历史加载完成后按级联默认值回填名称与数量（仅执行一次）
+  // #region 初始化级联：历史加载完成后按级联值回填名称与数量（仅执行一次，静默不提示）
   useEffect(() => {
     if (monsterHistory.historyLoading || formCascadeInitializedRef.current) {
       return;
@@ -206,14 +212,19 @@ const useMonsterPage = (): UseMonsterPageResult => {
     formCascadeInitializedRef.current = true;
     const
       currentType: MonsterType = form.getFieldValue("type") ?? DEFAULT_MONSTER_TYPE,
-      nextName = resolveDefaultName(
+      nextName = resolveCascadeName(
         currentType,
         monsterHistory.formDefaults.nameByType,
         monsterHistory.nameMonsterMap,
+      ),
+      nextCount = resolveCascadeCount(
+        nextName.value,
+        monsterHistory.formDefaults.countByName,
+        monsterHistory.nameMonsterMap,
       );
     form.setFieldsValue({
-      count: resolveDefaultCount(nextName, monsterHistory.formDefaults.countByName),
-      name: nextName,
+      count: nextCount.value,
+      name: nextName.value,
     });
   }, [form, monsterHistory.historyLoading, monsterHistory.formDefaults, monsterHistory.nameMonsterMap]);
   // #endregion
